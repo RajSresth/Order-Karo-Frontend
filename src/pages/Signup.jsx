@@ -1,11 +1,40 @@
-import {useState} from "react";
-import {Link} from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { validRoles } from "../constants/constant";
 import { FcGoogle } from "react-icons/fc";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 const Signup = () => {
-    const [role,setRole] = useState("user");
+  const [role, setRole] = useState("user");
+  const [showPassword, setShowPassword] = useState(false);
+  const [fullname, setFullname] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const validRoles = ["user", "admin", "rider"];
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/register",
+        {
+          fullname,
+          email,
+          mobile,
+          password,
+          role,
+        },
+        { withCredential: true },
+      );
+
+      console.log("response:",response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
@@ -17,21 +46,24 @@ const Signup = () => {
           Create Account - Sign Up
         </h2>
 
-        <form className="space-y-5" >
+        <form className="space-y-5" onSubmit={handleFormSubmit}>
           {/* Full Name */}
           <div>
             <label
               htmlFor="fullname"
               className="block text-sm font-semibold text-gray-800 mb-2"
             >
-              Full Name
+              Full Name<sup className="text-orange-600 text-[16px]">*</sup>
             </label>
             <input
               type="text"
               id="fullname"
               name="fullname"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
               placeholder="Enter your full name"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              required
             />
           </div>
 
@@ -41,15 +73,18 @@ const Signup = () => {
               htmlFor="mobile"
               className="block text-sm font-semibold text-gray-800 mb-2"
             >
-              Mobile Number
+              Mobile Number<sup className="text-orange-600 text-[16px]">*</sup>
             </label>
             <input
               type="tel"
               id="mobile"
               name="mobile"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
               placeholder="Enter 10 digit mobile number"
               maxLength="10"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              required
             />
           </div>
 
@@ -59,14 +94,17 @@ const Signup = () => {
               htmlFor="email"
               className="block text-sm font-semibold text-gray-800 mb-2"
             >
-              Email ID
+              Email ID <sup className="text-orange-600 text-[16px]">*</sup>
             </label>
             <input
               type="email"
               id="email"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none  focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              required
             />
           </div>
 
@@ -78,13 +116,24 @@ const Signup = () => {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter password (min 6 characters)"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none  focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password (min 6 characters)"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none  focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-[50%] right-3 translate-[-50%] cursor-pointer"
+              >
+                {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+              </button>
+            </div>
           </div>
 
           {/* Role Selection */}
@@ -93,26 +142,29 @@ const Signup = () => {
               Select Role
             </label>
             <div className="grid grid-cols-3 gap-3">
-             
-              {
-                validRoles.map((rol,idx) => {
-                    return  <button
-                                key={idx}
-                                type="button"
-                                className={`py-2 px-2 rounded-lg font-semibold text-md 
+              {validRoles.map((rol, idx) => {
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`py-2 px-2 rounded-lg font-semibold text-md 
                                         transition-all duration-300 cursor-pointer
                                     
-                                    ${role === rol ? "border-2 border-transparent bg-orange-600 text-gray-50 " : 
-                                        "border-2 border-gray-300 bg-white text-gray-700 hover:border-orange-600 hover:text-orange-600 "}
+                                    ${
+                                      role === rol
+                                        ? "border-2 border-transparent bg-orange-600 text-gray-50 "
+                                        : "border-2 border-gray-300 bg-white text-gray-700 hover:border-orange-600 hover:text-orange-600 "
+                                    }
                                     `}
-
-                                onClick={()=> setRole(rol)}
-                            >
-                             {   rol === "user" && "👤" || rol === "admin" &&  "🔐" || rol === "rider" && "🚴"} {rol}
-                            </button>
-                })
-              }
-             
+                    onClick={() => setRole(rol)}
+                  >
+                    {(rol === "user" && "👤") ||
+                      (rol === "admin" && "🔐") ||
+                      (rol === "rider" && "🚴")}{" "}
+                    {rol}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -126,9 +178,9 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="w-full bg-white border-2 border-gray-500 text-gray-700 font-semibold py-3 rounded-lg transition-all duration-300 flex justify-center items-center gap-2 hover:cursor-pointer"
+            className="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-lg transition-all duration-300 flex justify-center items-center gap-2 hover:cursor-pointer hover:bg-gray-200"
           >
-            <FcGoogle  size={25}/> <span>Signup with Google</span>
+            <FcGoogle size={25} /> <span>Signup with Google</span>
           </button>
         </form>
 
@@ -147,19 +199,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-
-/**
- *  <button
-                type="button"
-                className="py-3 px-3 rounded-lg font-semibold text-sm border-2 border-gray-300 bg-white text-gray-700 hover:border-purple-600 hover:text-purple-600 transition-all duration-300"
-              >
-                🔐 Admin
-              </button>
-              <button
-                type="button"
-                className="py-3 px-3 rounded-lg font-semibold text-sm border-2 border-gray-300 bg-white text-gray-700 hover:border-purple-600 hover:text-purple-600 transition-all duration-300"
-              >
-                🚴 Rider
-              </button>
- */
