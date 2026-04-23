@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { validRoles } from "../constants/constant";
+import { Link,useNavigate } from "react-router-dom";
+import { validRoles,serverUrl } from "../constants/constant";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -13,13 +13,14 @@ const Signup = () => {
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
-  const handleFormSubmit = async (e) => {
+  const handleSignupForm = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
+        `${serverUrl}/api/auth/register`,
         {
           fullname,
           email,
@@ -31,6 +32,8 @@ const Signup = () => {
       );
 
       console.log("response:",response);
+      navigate("/login",{replace:true})
+      
     } catch (error) {
       console.log(error);
     }
@@ -46,7 +49,7 @@ const Signup = () => {
           Create Account - Sign Up
         </h2>
 
-        <form className="space-y-5" onSubmit={handleFormSubmit}>
+        <form className="space-y-5" onSubmit={handleSignupForm}>
           {/* Full Name */}
           <div>
             <label

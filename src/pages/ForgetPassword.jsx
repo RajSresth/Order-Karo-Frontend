@@ -1,17 +1,79 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
+import axios from "axios";
+import { serverUrl } from "../constants/constant";
 
 const ForgetPassword = () => {
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate= useNavigate();
+
+  const handleSendOtp = async ( ) => {
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/auth/send-otp`,
+        {
+          email
+        },
+        { withCredential: true },
+      );          
+      console.log("response:",response);
+      setStep(2)
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleVerifyOtp = async ( ) => {
+     try {
+      const response = await axios.post(
+        `${serverUrl}/api/auth/verify-otp`,
+        {
+          email,
+          otp
+        },
+        { withCredential: true },
+      );          
+      console.log("response:",response);
+      setStep(3)
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleResetPassword = async ( ) => {
+     try {
+      if(newPassword !== confirmPassword)
+      {
+        return alert("Password Mismatch");
+      }
+
+      const response = await axios.post(
+        `${serverUrl}/api/auth/reset-password`,
+        {
+          email,
+          newPassword
+        },
+        { withCredential: true },
+      );          
+      console.log("response:",response);
+      navigate("/login",{replace:true});
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
@@ -46,8 +108,9 @@ const ForgetPassword = () => {
             <button
               type="button"
               className="w-full mt-3 bg-orange-600 text-white font-semibold py-3 rounded-lg hover:bg-orange-700 hover:cursor-pointer transition-all duration-300"
+              onClick={handleSendOtp}
             >
-              Sent OTP
+              Send OTP
             </button>
           </div>
         )}
@@ -80,6 +143,7 @@ const ForgetPassword = () => {
             <button
               type="button"
               className="w-full mt-3 bg-orange-600 text-white font-semibold py-3 rounded-lg hover:bg-orange-700 hover:cursor-pointer transition-all duration-300"
+              onClick={handleVerifyOtp}
             >
               Verify OTP
             </button>
@@ -97,7 +161,7 @@ const ForgetPassword = () => {
                 htmlFor="newPassword"
                 className="block text-sm font-semibold text-gray-800 mb-2"
               >
-                New Password{" "}
+                New Password 
                 <sup className="text-orange-600 text-[16px]">*</sup>
               </label>
               <div className="relative">
@@ -126,7 +190,7 @@ const ForgetPassword = () => {
                 htmlFor="confirmPassword"
                 className="block text-sm font-semibold text-gray-800 mb-2"
               >
-                Confirm Password{" "}
+                Confirm Password
                 <sup className="text-orange-600 text-[16px]">*</sup>
               </label>
               <div className="relative">
@@ -149,10 +213,11 @@ const ForgetPassword = () => {
                 </button>
               </div>
             </div>
-            
+
             <button
               type="button"
               className="w-full mt-3 bg-orange-600 text-white font-semibold py-3 rounded-lg hover:bg-orange-700 hover:cursor-pointer transition-all duration-300"
+              onClick={handleResetPassword}
             >
               Reset Password
             </button>

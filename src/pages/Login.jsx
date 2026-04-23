@@ -2,19 +2,37 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { validRoles } from "../constants/constant";
-import { Link } from "react-router-dom";
+import { validRoles,serverUrl } from "../constants/constant";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 const Login = () => {
   const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const handleLoginForm = async (e) => {
     e.preventDefault();
-    try {
-    } catch (error) {}
+
+     try {
+      const response = await axios.post(
+        `${serverUrl}/api/auth/register`,
+        {
+          email,          
+          password,
+          role,
+        },
+        { withCredential: true },
+      );
+          
+      console.log("response:",response);
+      navigate("/home",{replace:true});
+
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
