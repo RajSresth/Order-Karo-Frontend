@@ -5,6 +5,8 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { validRoles,serverUrl } from "../constants/constant";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {signInWithPopup} from "firebase/auth";
+import {provider,auth} from "../../firebase";
 
 const Login = () => {
   const [role, setRole] = useState("user");
@@ -34,6 +36,23 @@ const Login = () => {
       console.log(error);
     }
   };
+
+   const handleGoogleAuthLogin = async () => {
+    try {
+                   
+          const result = await signInWithPopup(auth,provider);
+          const {data} = await axios.post(`${serverUrl}/api/auth/google-auth-login`,{           
+            email:result?.user?.email,            
+            role
+          },{withCredentials: true});
+
+          console.log("data:",data);
+    } catch (error) {
+        console.log("Google Login Error:",error?.response?.data?.message);
+        console.log("Full Error Data:", error.response?.data);
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
@@ -141,8 +160,9 @@ const Login = () => {
 
           {/* Google Button */}
           <button
-            type="submit"
+            type="button"
             className="w-full mt-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-lg transition-all duration-300 flex justify-center items-center gap-2 hover:cursor-pointer hover:bg-gray-200"
+            onClick={handleGoogleAuthLogin}
           >
             <FcGoogle size={25} /> <span>Signup with Google</span>
           </button>

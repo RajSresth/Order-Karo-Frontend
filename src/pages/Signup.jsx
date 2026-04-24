@@ -5,6 +5,8 @@ import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
+import {signInWithPopup} from "firebase/auth";
+import {provider,auth} from "../../firebase"
 
 const Signup = () => {
   const [role, setRole] = useState("user");
@@ -38,6 +40,28 @@ const Signup = () => {
       console.log(error);
     }
   };
+
+  const handleGoogleAuthSignup = async () => {
+    try {
+          if(!mobile)
+          {
+            return alert("Please enter mobile number first");
+          }
+          
+          const result = await signInWithPopup(auth,provider);
+          const {data} = await axios.post(`${serverUrl}/api/auth/google-auth-signup`,{
+            fullname: result?.user?.displayName,
+            email:result?.user?.email,
+            mobile,
+            role
+          },{withCredentials: true});
+
+          console.log("data:",data);
+    } catch (error) {
+        console.log("Google Signup Error:",error?.response?.data?.message);
+        console.log("Full Error Data:", error.response?.data);
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
@@ -180,8 +204,9 @@ const Signup = () => {
           </button>
 
           <button
-            type="submit"
+            type="button"
             className="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-lg transition-all duration-300 flex justify-center items-center gap-2 hover:cursor-pointer hover:bg-gray-200"
+            onClick={handleGoogleAuthSignup}
           >
             <FcGoogle size={25} /> <span>Signup with Google</span>
           </button>
