@@ -20,17 +20,17 @@ const Login = () => {
 
      try {
       const response = await axios.post(
-        `${serverUrl}/api/auth/register`,
+        `${serverUrl}/api/auth/login`,
         {
           email,          
           password,
           role,
         },
-        { withCredential: true },
+        { withCredentials: true },
       );
           
       console.log("response:",response);
-      navigate("/home",{replace:true});
+      navigate("/",{replace:true});
 
     } catch (error) {
       console.log(error);

@@ -3,8 +3,11 @@ import {Routes,Route} from "react-router-dom";
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import ForgetPassword from './pages/ForgetPassword';
+import useGetCurrentUser from './hooks/useGetCurrentUser';
 
 const App = () => {
+  useGetCurrentUser();
+  
   return (
    <Routes>
       <Route path='/'  />
