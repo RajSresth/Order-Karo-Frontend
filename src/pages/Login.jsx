@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {signInWithPopup} from "firebase/auth";
 import {provider,auth} from "../../firebase";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const Login = () => {
   const [role, setRole] = useState("user");
@@ -14,22 +16,23 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate()
+  const dispatch = useDispatch();
 
   const handleLoginForm = async (e) => {
     e.preventDefault();
 
      try {
-      const response = await axios.post(
+      const {data} = await axios.post(
         `${serverUrl}/api/auth/login`,
         {
           email,          
           password,
           role,
         },
-        { withCredentials: true },
+        { withCredentials: true }
       );
           
-      console.log("response:",response);
+      dispatch(setUserData(data?.user));
       navigate("/",{replace:true});
 
     } catch (error) {
@@ -38,15 +41,14 @@ const Login = () => {
   };
 
    const handleGoogleAuthLogin = async () => {
-    try {
-                   
+    try {                   
           const result = await signInWithPopup(auth,provider);
           const {data} = await axios.post(`${serverUrl}/api/auth/google-auth-login`,{           
             email:result?.user?.email,            
             role
           },{withCredentials: true});
-
-          console.log("data:",data);
+          dispatch(setUserData(data?.user));
+          navigate("/",{replace:true});
     } catch (error) {
         console.log("Google Login Error:",error?.response?.data?.message);
         console.log("Full Error Data:", error.response?.data);
