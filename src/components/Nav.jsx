@@ -7,14 +7,14 @@ const Nav = () => {
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-6">
           {/* Left Section - Logo */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <h1 className="text-2xl font-bold text-orange-600">
               🛵 Order Karo
             </h1>
           </div>
 
           {/* Middle Section - Location & Search */}
-          <div className="flex-grow flex px-4 py-2 items-center gap-6 max-w-2xl border border-orange-600 rounded-lg">
+          <div className="grow flex px-4 py-2 items-center gap-6 max-w-2xl border border-orange-600 rounded-lg">
             {/* Location */}
             <div className="flex items-center gap-2 text-gray-700 whitespace-nowrap">
               <FiMapPin className="text-orange-600 text-xl" />
@@ -22,7 +22,7 @@ const Nav = () => {
             </div>
 
             {/* Search Bar */}
-            <div className="flex-grow border-orange-600 border-l-2">
+            <div className="grow border-orange-600 border-l-2">
               <div className="relative">
                 <input
                   type="text"
@@ -37,7 +37,7 @@ const Nav = () => {
           </div>
 
           {/* Right Section - Cart, Orders & User */}
-          <div className="flex items-center gap-6 flex-shrink-0">
+          <div className="flex items-center gap-6 shrink-0">
             {/* Cart Icon */}
             <div className="relative cursor-pointer group">
               <FiShoppingCart className="text-2xl text-gray-700 group-hover:text-orange-600 transition" />
