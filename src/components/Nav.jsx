@@ -1,14 +1,36 @@
-import {useState} from "react";
-import { FiMapPin,FiUser,FiLogOut, FiSearch, FiShoppingCart } from "react-icons/fi";
-import { useSelector } from "react-redux";
+import { useState } from "react";
+import {
+  FiMapPin,
+  FiUser,
+  FiLogOut,
+  FiSearch,
+  FiShoppingCart,
+} from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { serverUrl } from "../constants/constant";
+import {useNavigate} from "react-router-dom";
+import { setCity,setUserData } from "../redux/userSlice";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const city = useSelector((state) => state.user.city);
   const userData = useSelector((state) => state.user.userData);
 
-  console.log("userData:", userData);
+  const handleLogout = async () => {
+    try {
+        const {data} = await axios.get(`${serverUrl}/api/auth/logout`,{withCredentials:true});
+        navigate("login",{replace:true});
+        dispatch(setUserData(null));
+        dispatch(setCity(null));
+    } catch (error) {
+      console.log("Logout Error:",error.response.data);
+    }
+  }
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-4">
@@ -62,37 +84,40 @@ const Nav = () => {
 
             {/* User Profile with Circular Avatar */}
             <div className="relative flex items-center gap-2">
-                <div
-                  className="w-10 h-10 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-lg cursor-pointer hover:bg-orange-700 transition"
-                  onClick={() => setIsOpen(prev => !prev)}
-                >
-                  {userData?.fullname[0].toUpperCase()}
-                </div>
-
-                {/* Dropdown */}
-                {isOpen && (
-                  <div className="absolute right-0 top-14 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 z-50 flex flex-col gap-1">
-                    
-                    {/* User Info */}
-                    <div className="px-3 py-2 border-b border-gray-100 mb-1">
-                      <p className="text-sm font-semibold text-gray-800">{userData?.fullname}</p>
-                      <p className="text-xs text-gray-400">{userData?.email}</p>
-                    </div>
-
-                    {/* Profile Option */}
-                    <button className="flex items-center gap-3 px-3 py-2 rounded-xl text-gray-700 text-sm font-medium hover:bg-orange-50 hover:text-orange-600 transition-all duration-150 text-left w-full cursor-pointer">
-                      <FiUser className="text-base" />
-                      Profile
-                    </button>
-
-                    {/* Logout Button */}
-                    <button className="flex items-center justify-center gap-2 mt-1 w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95">
-                      <FiLogOut className="text-base" />
-                      Logout
-                    </button>
-                  </div>
-                )}
+              <div
+                className="w-10 h-10 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-lg cursor-pointer hover:bg-orange-700 transition"
+                onClick={() => setIsOpen((prev) => !prev)}
+              >
+                {userData?.fullname[0].toUpperCase()}
               </div>
+
+              {/* Dropdown */}
+              {isOpen && (
+                <div className="absolute right-0 top-14 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 z-50 flex flex-col gap-1">
+                  {/* User Info */}
+                  <div className="px-3 py-2 border-b border-gray-100 mb-1">
+                    <p className="text-sm font-semibold text-gray-800">
+                      {userData?.fullname}
+                    </p>
+                    <p className="text-xs text-gray-400">{userData?.email}</p>
+                  </div>
+
+                  {/* Profile Option */}
+                  <button className="flex items-center gap-3 px-3 py-2 rounded-xl text-gray-700 text-sm font-medium hover:bg-orange-50 hover:text-orange-600 transition-all duration-150 text-left w-full cursor-pointer">
+                    <FiUser className="text-base" />
+                    Profile
+                  </button>
+
+                  {/* Logout Button */}
+                  <button className="flex items-center justify-center gap-2 mt-1 w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 cursor-pointer"
+                  onClick={handleLogout}
+                  >
+                    <FiLogOut className="text-base" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
