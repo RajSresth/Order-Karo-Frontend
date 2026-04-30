@@ -1,14 +1,22 @@
 import React from 'react'
 import {Routes,Route, Navigate} from "react-router-dom";
+
+// Pages
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import ForgetPassword from './pages/ForgetPassword';
-import useGetCurrentUser from './hooks/useGetCurrentUser';
-import { useSelector } from 'react-redux';
 import Home from './pages/Home';
+
+// Hooks
+import useGetCurrentUser from './hooks/useGetCurrentUser';
+import useGetCity from './hooks/useGetCity';
+
+// Redux
+import { useSelector } from 'react-redux';
 
 const App = () => {
   useGetCurrentUser();
+  useGetCity()
   const userData = useSelector((state) => state.user.userData);
   const loading = useSelector((state) => state.user.loading); 
 
