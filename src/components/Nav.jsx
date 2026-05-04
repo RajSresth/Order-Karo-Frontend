@@ -17,7 +17,7 @@ const Nav = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const city = useSelector((state) => state.user.city);
+  const {city,address, state} = useSelector((state) => state.user);
   const userData = useSelector((state) => state.user.userData);
 
   const handleLogout = async () => {
@@ -48,7 +48,7 @@ const Nav = () => {
             <div className="flex items-center gap-2  text-gray-700">
               <FiMapPin className="text-orange-600 text-xl shrink-0" />
               <span className="text-sm truncate  text-gray-500 font-medium max-w-30">
-                {city}
+                {city + " "+ state +" " + address}
               </span>
             </div>
 
