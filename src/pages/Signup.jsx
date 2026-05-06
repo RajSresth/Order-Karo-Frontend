@@ -186,6 +186,7 @@ const Signup = () => {
                     onClick={() => setRole(rol)}
                   >
                     {(rol === "user" && "👤") ||
+                      (rol === "owner" && "🏡") ||
                       (rol === "admin" && "🔐") ||
                       (rol === "rider" && "🚴")}{" "}
                     {rol}

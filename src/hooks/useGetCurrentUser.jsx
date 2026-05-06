@@ -16,6 +16,7 @@ const useGetCurrentUser = () => {
         );
         dispatch(setUserData(data));
       } catch (error) {
+        // console.log(error.response.data)
         dispatch(setUserData(null));
         dispatch(setLoading(false)); // error pe bhi loading false karo
       }

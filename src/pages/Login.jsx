@@ -143,6 +143,7 @@ const Login = () => {
                     onClick={() => setRole(rol)}
                   >
                     {(rol === "user" && "👤") ||
+                      (rol === "owner" && "🏡") ||
                       (rol === "admin" && "🔐") ||
                       (rol === "rider" && "🚴")}{" "}
                     {rol}

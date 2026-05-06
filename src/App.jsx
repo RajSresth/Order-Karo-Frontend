@@ -1,26 +1,42 @@
-import React from 'react'
-import {Routes,Route, Navigate} from "react-router-dom";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-// Pages
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import ForgetPassword from './pages/ForgetPassword';
-import Home from './pages/Home';
+// Auth Pages
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import ForgetPassword from "./pages/ForgetPassword";
+
+// App Pages
+import Home from "./pages/Home";
+
+// Shop Pages
+import MyShops from "./pages/shop/MyShops";
+import CreateShop from "./pages/shop/CreateShop";
+import EditShop from "./pages/shop/EditShop";
+
+
+// Item Pages
+import CreateItem from "./pages/item/CreateItem";
+import EditItem from "./pages/item/EditItem";
+
+
+// Routes
+import PublicRoute from "./routes/PublicRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import OwnerRoute from "./routes/OwnerRoutes";
 
 // Hooks
-import useGetCurrentUser from './hooks/useGetCurrentUser';
-import useGetCity from './hooks/useGetCity';
-
-// Redux
-import { useSelector } from 'react-redux';
+import useGetCurrentUser from "./hooks/useGetCurrentUser";
+import useGetCity from "./hooks/useGetCity";
+import useGetMyShop from "./hooks/useGetMyShop";
 
 const App = () => {
   useGetCurrentUser();
-  useGetCity()
-  const userData = useSelector((state) => state.user.userData);
-  const loading = useSelector((state) => state.user.loading); 
+  useGetCity();
+  useGetMyShop();
+  const loading = useSelector((state) => state.user.loading);
 
- 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -31,12 +47,30 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path='/' element={userData ? <Home/> : <Navigate to={"/login"} />} />
-      <Route path='/signup' element={userData ? <Navigate to={"/"} /> : <Signup/>} />
-      <Route path='/login' element={userData ? <Navigate to={"/"} /> : <Login/>} />
-      <Route path='/forget-password' element={userData ? <Navigate to={"/"} /> : <ForgetPassword/>} />
-    </Routes>
-  )
-}
 
-export default App
+      {/* Public Routes */}
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forget-password" element={<ForgetPassword />} />
+      </Route>
+
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+
+          {/* Owner Only Routes */}
+        <Route element={<OwnerRoute />}>
+          <Route path="/my-shops"           element={<MyShops />} />
+          <Route path="/create-shop"        element={<CreateShop />} />
+          <Route path="/edit-shop/:shopId"  element={<EditShop />} />
+          <Route path="/create-item"        element={<CreateItem />} />
+          <Route path="/edit-item/:itemId"  element={<EditItem />} />
+        </Route>
+      </Route>
+
+    </Routes>
+  );
+};
+
+export default App;
