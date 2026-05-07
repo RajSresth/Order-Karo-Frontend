@@ -19,7 +19,7 @@ const useGetMyShop = () => {
         console.log("data:", data);
         dispatch(setShopData(data?.shops));
       } catch (error) {
-        console.log("fetch shop error:", error);
+        console.log("fetch shop error:", error.response.data);
       }
     };
 

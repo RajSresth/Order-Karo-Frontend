@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   FiSearch,
   FiShoppingBag,
@@ -7,82 +7,33 @@ import {
   FiClock,
   FiHome,
   FiHelpCircle,
-  FiLogOut,
-  FiChevronDown
+  FiLogOut
 } from "react-icons/fi";
+import { serverUrl } from "../constants/constant";
+import {setShopData} from "../redux/shopSlice"
+import { useDispatch } from "react-redux";
+import axios from "axios"
+import { setCity, setUserData } from "../redux/userSlice";
 
-const orders = [
-  {
-    id: "174404 0262",
-    tag: "ORDER KARO DELIVERY",
-    shop: "Kebab & Curry",
-    location: "Sector 43, Gurgaon",
-    customerNote: "Rahul's 3rd order",
-    placed: "2:00 pm",
-    accepted: "2:02 pm",
-    payment: "PAID",
-    total: "850",
-    status: "preparing",
-    readyTime: "12.24",
-    items: [
-      { name: "Paneer Kebab", qty: 1, price: 405, veg: true },
-      { name: "Chicken Tikka Kebab", qty: 1, price: 445, veg: false },
-    ],
-    rider: {
-      name: "Raghav",
-      text: "is on the way",
-      time: "8 mins",
-    },
-  },
-  {
-    id: "174404 0181",
-    tag: "SELF DELIVERY",
-    shop: "Mexican Delights",
-    location: "Galleria Market, Gurgaon",
-    customerNote: "Sanjana's 8th order",
-    placed: "2:15 pm",
-    accepted: "2:16 pm",
-    payment: "CASH",
-    total: "1160",
-    status: "preparing",
-    readyTime: "10.12",
-    items: [
-      { name: "Guac Bowl", qty: 1, price: 600, veg: true },
-      { name: "Chipotle Chicken Burrito", qty: 2, price: 560, veg: false },
-    ],
-    address:
-      "A-22, One Horizon Centre, Golf Course Road, DLF Phase 5, Sector 43",
-  },
-  {
-    id: "174404 0299",
-    tag: "ORDER KARO DELIVERY",
-    shop: "Pizza Palace",
-    location: "Noida Sector 62",
-    customerNote: "Aman's 2nd order",
-    placed: "2:22 pm",
-    accepted: "2:24 pm",
-    payment: "PAID",
-    total: "640",
-    status: "preparing",
-    readyTime: "08.45",
-    items: [
-      { name: "Farmhouse Pizza", qty: 1, price: 420, veg: true },
-      { name: "Garlic Bread", qty: 1, price: 220, veg: true },
-    ],
-    rider: {
-      name: "Vikram",
-      text: "is on the way",
-      time: "12 mins",
-    },
-  },
-];
 
 const OwnerDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("preparing");
+  const dispatch = useDispatch();
 
+const handleLogout = async () => {
+  try {
+     await axios.get(`${serverUrl}/api/auth/logout`, {
+        withCredentials: true,
+      });
 
-
+      dispatch(setUserData(null));
+      dispatch(setCity(null));
+      dispatch(setShopData(null));
+      navigate("/login", { replace: true });
+  } catch (error) {
+    console.log("Logout Error:", error.response?.data || error.message);
+  }
+}
 
   return (
     <div className="h-screen overflow-hidden bg-linear-to-br from-emerald-100 via-sky-100 to-slate-100">
@@ -96,7 +47,7 @@ const OwnerDashboard = () => {
               Restaurant Partner
             </p>
           </div>
-
+        
           {/* sidebar routes change*/}
           <div className="space-y-1 px-4">
             <NavLink
@@ -114,7 +65,7 @@ const OwnerDashboard = () => {
             </NavLink>
 
             <NavLink
-              to="/orders"
+              to="/menu"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -128,7 +79,7 @@ const OwnerDashboard = () => {
             </NavLink>
 
             <NavLink
-              to="/orders"
+              to="/my-shops"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -142,7 +93,7 @@ const OwnerDashboard = () => {
             </NavLink>
 
             <NavLink
-              to="/orders"
+              to="/order-history"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -156,7 +107,7 @@ const OwnerDashboard = () => {
             </NavLink>
 
             <NavLink
-              to="/orders"
+              to="/outlet-info"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -169,8 +120,8 @@ const OwnerDashboard = () => {
              Outlet info
             </NavLink>
   
-               <NavLink
-              to="/orders"
+            <NavLink
+              to="/help"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -186,7 +137,9 @@ const OwnerDashboard = () => {
           </div>
 
           <div className="mt-8 px-4">
-            <button className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-red-50 hover:text-red-600">
+            <button className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:cursor-pointer hover:bg-red-50 hover:text-red-600"
+              onClick={handleLogout}
+            >
               <FiLogOut className="text-xl" />
               Logout
             </button>
@@ -206,18 +159,14 @@ const OwnerDashboard = () => {
               />
             </div>
 
-            <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">
-              <span className="text-green-600">3 online</span>
-              <span className="text-slate-300">|</span>
-              <span className="text-slate-500">1 offline</span>
-              <FiChevronDown className="text-slate-500" />
-            </div>
+           
           </header>
 
           <main className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
          
 
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-2">
+              <Outlet/>
             </div>
               
           </main>

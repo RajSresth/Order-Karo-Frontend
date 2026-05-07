@@ -15,11 +15,9 @@ import MyShops from "./pages/shop/MyShops";
 import CreateShop from "./pages/shop/CreateShop";
 import EditShop from "./pages/shop/EditShop";
 
-
 // Item Pages
 import CreateItem from "./pages/item/CreateItem";
 import EditItem from "./pages/item/EditItem";
-
 
 // Routes
 import PublicRoute from "./routes/PublicRoute";
@@ -30,6 +28,9 @@ import OwnerRoute from "./routes/OwnerRoutes";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import useGetCity from "./hooks/useGetCity";
 import useGetMyShop from "./hooks/useGetMyShop";
+
+import OwnerDashboard from "./components/OwnerDashboard";
+import Orders from "./pages/orders/Orders";
 
 const App = () => {
   useGetCurrentUser();
@@ -47,7 +48,6 @@ const App = () => {
 
   return (
     <Routes>
-
       {/* Public Routes */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
@@ -57,18 +57,32 @@ const App = () => {
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
 
-          {/* Owner Only Routes */}
+        {/* Owner Only Routes */}
         <Route element={<OwnerRoute />}>
-          <Route path="/my-shops"           element={<MyShops />} />
-          <Route path="/create-shop"        element={<CreateShop />} />
-          <Route path="/edit-shop/:shopId"  element={<EditShop />} />
-          <Route path="/create-item"        element={<CreateItem />} />
-          <Route path="/edit-item/:itemId"  element={<EditItem />} />
+          <Route element={<OwnerDashboard />}>
+            {/* Dashboard pages */}
+            <Route path="/dashboard/orders" element={<Orders />} />
+            <Route path="/dashboard/menu" element={<Menu />} />
+            <Route path="/dashboard/my-shops" ine element={<MyShops />} />
+            <Route path="/dashboard/order-history" element={<OrderHistory />} />
+            <Route path="/dashboard/outlet-info" element={<OutletInfo />} />
+            <Route path="/dashboard/help" element={<HelpCenter />} />
+
+            <Route path="/create-shop" element={<CreateShop />} />
+            <Route path="/edit-shop/:shopId" element={<EditShop />} />
+            <Route path="/create-item" element={<CreateItem />} />
+            <Route path="/edit-item/:itemId" element={<EditItem />} />
+
+            {/* Default redirect */}
+            <Route
+              index
+              element={<Navigate to="/dashboard/orders" replace />}
+            />
+          </Route>
         </Route>
       </Route>
-
     </Routes>
   );
 };

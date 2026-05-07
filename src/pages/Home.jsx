@@ -13,7 +13,7 @@ const Home = () => {
     <div className="w-full min-h-screen ">
       {userData?.role === "user" && <Nav />}
       {userData?.role === "user" && <UserDashboard />}
-      
+
       {userData?.role === "admin" && <AdminDashboard />}
       {userData?.role === "rider" && <RiderDashboard />}
       {userData?.role === "owner" && <OwnerDashboard />}
