@@ -1,22 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FiSearch,
   FiShoppingBag,
   FiMenu,
   FiClock,
-  FiBarChart2,
-  FiDollarSign,
   FiHome,
   FiHelpCircle,
   FiLogOut,
-  FiPhone,
-  FiPrinter,
-  FiMapPin,
-  FiCopy,
-  FiChevronDown,
-  FiCheckCircle,
-  FiPlusCircle,
+  FiChevronDown
 } from "react-icons/fi";
 
 const orders = [
@@ -89,22 +81,8 @@ const OwnerDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("preparing");
 
-  const sidebarItems = [
-    { label: "Orders", icon: FiShoppingBag, active: true, path: "/orders" },
-    { label: "Menu", icon: FiMenu, path: "/show-menu" },
-    { label: "Order history", icon: FiClock, path: "/order-history" },
-    { label: "Insights", icon: FiBarChart2, path: "/insights" },
-    { label: "My Shops", icon: FiHome, path: "/my-shops" },
-    { label: "Payout", icon: FiDollarSign, path: "/payout" },
-    { label: "Outlet info", icon: FiHome, path: "/create-shop" },
-    { label: "Help centre", icon: FiHelpCircle, path: "/help" },
-  ];
 
-  const tabCounts = {
-    preparing: 2,
-    ready: 1,
-    picked: 2,
-  };
+
 
   return (
     <div className="h-screen overflow-hidden bg-linear-to-br from-emerald-100 via-sky-100 to-slate-100">
@@ -121,24 +99,90 @@ const OwnerDashboard = () => {
 
           {/* sidebar routes change*/}
           <div className="space-y-1 px-4">
-            {sidebarItems.map((item) => {
-              const Icon = item.icon;
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiShoppingBag className="text-xl" />
+              Orders
+            </NavLink>
 
-              return (
-                <button
-                  key={item.label}
-                  onClick={() => navigate(item.path)}
-                  className={`flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                    item.active
-                      ? "bg-orange-50 text-orange-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
-                >
-                  <Icon className="text-xl" />
-                  {item.label}
-                </button>
-              );
-            })}
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiMenu className="text-xl" />
+              Menu
+            </NavLink>
+
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiHome className="text-xl" />
+              My Shops
+            </NavLink>
+
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiClock className="text-xl" />
+             Order history
+            </NavLink>
+
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiHome className="text-xl" />
+             Outlet info
+            </NavLink>
+  
+               <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiHelpCircle className="text-xl" />
+             Help Center
+            </NavLink>
+            
           </div>
 
           <div className="mt-8 px-4">
@@ -171,39 +215,23 @@ const OwnerDashboard = () => {
           </header>
 
           <main className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
-            <div className="mb-5 flex shrink-0 flex-wrap items-center gap-4">
-              {[
-                { key: "preparing", label: "Preparing" },
-                { key: "ready", label: "Ready" },
-                { key: "picked", label: "Picked up" },
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`rounded-2xl border px-6 py-3 text-sm font-semibold ${
-                    activeTab === tab.key
-                      ? "border-orange-100 bg-white text-orange-600 shadow-sm"
-                      : "border-slate-200 bg-white text-slate-500"
-                  }`}
-                >
-                  {tab.label}
-                  <span className="ml-2 rounded-md border border-current px-1.5">
-                    {tabCounts[tab.key]}
-                  </span>
-                </button>
-              ))}
-
-              <button
-                onClick={() => navigate("/create-item")}
-                className="ml-auto inline-flex items-center gap-2 rounded-2xl bg-orange-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-700"
-              >
-                <FiPlusCircle />
-                Add item
-              </button>
-            </div>
+         
 
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-2">
-              {orders.map((order) => (
+            </div>
+              
+          </main>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+export default OwnerDashboard;
+
+
+/**
+ * {orders.map((order) => (
                 <div
                   key={order.id}
                   className="grid gap-5 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm xl:grid-cols-[1fr_1.6fr_1.2fr]"
@@ -381,12 +409,4 @@ const OwnerDashboard = () => {
                   </div>
                 </div>
               ))}
-            </div>
-          </main>
-        </section>
-      </div>
-    </div>
-  );
-};
-
-export default OwnerDashboard;
+ */
