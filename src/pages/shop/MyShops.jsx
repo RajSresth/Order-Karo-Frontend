@@ -3,9 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { serverUrl } from "../../constants/constant";
-import { removeShop } from "../../redux/shopSlice"
-import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
-import Nav from "../../components/Nav"
+import { removeShop } from "../../redux/shopSlice";
+import { FiEdit2, FiTrash2, FiPlus, FiSearch } from "react-icons/fi";
 const MyShops = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,7 +19,7 @@ const MyShops = () => {
       setDeleting(true);
       const { data } = await axios.delete(
         `${serverUrl}/api/shop/remove-shop/${shopId}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       dispatch(removeShop(shopId));
       setDeleteConfirm(null);
@@ -35,21 +34,35 @@ const MyShops = () => {
   if (!shopData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50">
-        <p className="text-orange-600 text-xl font-bold">Loading your shops...</p>
+        <p className="text-orange-600 text-xl font-bold">
+          Loading your shops...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 ">
-        <Nav/>
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-30 flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
+        <div className="relative w-full max-w-xl">
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-xl text-orange-600" />
+          <input
+            type="text"
+            placeholder="Look for orders by ID, food item or customer name"
+            className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-50"
+          />
+        </div>
+      </header>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-orange-600 mb-2">My Shops</h1>
+            <h1 className="text-4xl font-bold text-orange-600 mb-2">
+              My Shops
+            </h1>
             <p className="text-gray-600 font-semibold">
-              Total Shops: <span className="text-orange-600">{shopData.length}</span>
+              Total Shops:{" "}
+              <span className="text-orange-600">{shopData.length}</span>
             </p>
           </div>
           <button
@@ -99,13 +112,23 @@ const MyShops = () => {
 
                 {/* Shop Info */}
                 <div className="p-4">
-                  <h2 className="text-xl font-bold text-gray-800 mb-2">{shop.name}</h2>
+                  <h2 className="text-xl font-bold text-gray-800 mb-2">
+                    {shop.name}
+                  </h2>
                   <div className="space-y-1 text-gray-600 text-sm mb-4">
-                    <p><span className="font-semibold">📍 Location:</span> {shop.city}, {shop.state}</p>
-                    <p><span className="font-semibold">🏠 Address:</span> {shop.address}</p>
+                    <p>
+                      <span className="font-semibold">📍 Location:</span>{" "}
+                      {shop.city}, {shop.state}
+                    </p>
+                    <p>
+                      <span className="font-semibold">🏠 Address:</span>{" "}
+                      {shop.address}
+                    </p>
                     <p>
                       <span className="font-semibold">🍽️ Items:</span>{" "}
-                      <span className="text-orange-600 font-bold">{shop.items?.length || 0}</span>
+                      <span className="text-orange-600 font-bold">
+                        {shop.items?.length || 0}
+                      </span>
                     </p>
                   </div>
 
@@ -119,7 +142,9 @@ const MyShops = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => navigate(`/create-item?shopId=${shop._id}`)}
+                      onClick={() =>
+                        navigate(`/create-item?shopId=${shop._id}`)
+                      }
                       className="flex-1 py-2 px-3 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all duration-300"
                     >
                       <FiPlus className="inline mr-1" />
@@ -156,7 +181,9 @@ const MyShops = () => {
                 {/* Items Preview */}
                 {shop.items && shop.items.length > 0 && (
                   <div className="border-t p-4 bg-gray-50">
-                    <p className="text-xs font-semibold text-gray-700 mb-2">Recent Items:</p>
+                    <p className="text-xs font-semibold text-gray-700 mb-2">
+                      Recent Items:
+                    </p>
                     <div className="flex flex-wrap gap-1">
                       {shop.items.slice(0, 3).map((item) => (
                         <span

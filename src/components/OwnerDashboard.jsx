@@ -50,8 +50,23 @@ const handleLogout = async () => {
         
           {/* sidebar routes change*/}
           <div className="space-y-1 px-4">
+
             <NavLink
-              to="/orders"
+              to="/dashboard/create-shop"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiHome className="text-xl" />
+              Create Shop
+            </NavLink>
+
+            <NavLink
+              to="/dashboard/orders"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -64,22 +79,10 @@ const handleLogout = async () => {
               Orders
             </NavLink>
 
-            <NavLink
-              to="/menu"
-              className={({ isActive }) =>
-                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-orange-50 text-orange-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`
-              }
-            >
-              <FiMenu className="text-xl" />
-              Menu
-            </NavLink>
+            
 
             <NavLink
-              to="/my-shops"
+              to="/dashboard/my-shops"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -93,7 +96,7 @@ const handleLogout = async () => {
             </NavLink>
 
             <NavLink
-              to="/order-history"
+              to="/dashboard/order-history"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -105,23 +108,9 @@ const handleLogout = async () => {
               <FiClock className="text-xl" />
              Order history
             </NavLink>
-
-            <NavLink
-              to="/outlet-info"
-              className={({ isActive }) =>
-                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-orange-50 text-orange-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`
-              }
-            >
-              <FiHome className="text-xl" />
-             Outlet info
-            </NavLink>
   
             <NavLink
-              to="/help"
+              to="/dashboard/help"
               className={({ isActive }) =>
                 `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
@@ -147,25 +136,12 @@ const handleLogout = async () => {
         </aside>
 
         <section className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-slate-50">
-          <header className="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
+          
 
-            {/* search bar */}
-            <div className="relative w-full max-w-xl">
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-xl text-orange-600" />
-              <input
-                type="text"
-                placeholder="Look for orders by ID, food item or customer name"
-                className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-50"
-              />
-            </div>
-
-           
-          </header>
-
-          <main className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+          <main className="flex min-h-0 flex-1 flex-col overflow-hidden ">
          
 
-            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-2">
+            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto ">
               <Outlet/>
             </div>
               

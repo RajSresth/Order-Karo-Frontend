@@ -1,40 +1,40 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../../constants/constant";
 import { FiUpload } from "react-icons/fi";
 import { useSelector } from "react-redux";
-import { IoIosArrowRoundBack } from "react-icons/io";
 
 const CreateShop = () => {
   const navigate = useNavigate();
-  const { userData, city, state, address } = useSelector((state) => state.user);
-  const [formData, setFormData] = useState({
-    name: "",
-    city: city || "",
-    state: state || "",
-    address: address || "",
-    image: null,
-  });
+  const {
+    userData,
+    city: userCity,
+    state: userState,
+    address: userAddress,
+  } = useSelector((state) => state.user);
+
+  // Ye add karo
+  useEffect(() => {
+    if (userCity) setCity(userCity);
+    if (userState) setState(userState);
+    if (userAddress) setAddress(userAddress);
+  }, [userCity, userState, userAddress]);
+
+  const [name, setName] = useState("");
+  const [city, setCity] = useState(userCity || "");
+  const [state, setState] = useState(userState || "");
+  const [address, setAddress] = useState(userAddress || "");
+  const [image, setImage] = useState(null);
+
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
+      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -48,11 +48,11 @@ const CreateShop = () => {
     setError("");
 
     if (
-      !formData.name ||
-      !formData.city ||
-      !formData.state ||
-      !formData.address ||
-      !formData.image
+      !name.trim() ||
+      !city.trim() ||
+      !state.trim() ||
+      !address.trim() ||
+      !image
     ) {
       setError("All fields including image are required");
       return;
@@ -61,11 +61,11 @@ const CreateShop = () => {
     try {
       setLoading(true);
       const form = new FormData();
-      form.append("name", formData.name);
-      form.append("city", formData.city);
-      form.append("state", formData.state);
-      form.append("address", formData.address);
-      form.append("image", formData.image);
+      form.append("name", name);
+      form.append("city", city);
+      form.append("state", state);
+      form.append("address", address);
+      form.append("image", image);
 
       const { data } = await axios.post(
         `${serverUrl}/api/shop/create-shop`,
@@ -79,7 +79,7 @@ const CreateShop = () => {
       );
 
       alert(data.message);
-      navigate("/my-shops");
+      navigate("/dashboard/my-shops");
     } catch (error) {
       setError(error.response?.data?.message || "Error creating shop");
       console.error("Create Shop Error:", error);
@@ -91,10 +91,7 @@ const CreateShop = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl flex items-center gap-16 font-bold text-center text-orange-600 mb-2">
-          <Link to="/" className="text-orange-600">
-            <IoIosArrowRoundBack size={36} />
-          </Link>
+        <h1 className="text-2xl text-center gap-16 font-bold text-orange-600 mb-2">
           Create Your Shop
         </h1>
         <h2 className="text-center text-gray-500 text-md font-semibold mb-6">
@@ -116,8 +113,8 @@ const CreateShop = () => {
             <input
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleInputChange}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter shop name"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
             />
@@ -131,8 +128,8 @@ const CreateShop = () => {
             <input
               type="text"
               name="city"
-              value={formData.city}
-              onChange={handleInputChange}
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
               placeholder="Enter city name"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
             />
@@ -146,8 +143,8 @@ const CreateShop = () => {
             <input
               type="text"
               name="state"
-              value={formData.state}
-              onChange={handleInputChange}
+              value={state}
+              onChange={(e) => setState(e.target.value)}
               placeholder="Enter state name"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
             />
@@ -160,8 +157,8 @@ const CreateShop = () => {
             </label>
             <textarea
               name="address"
-              value={formData.address}
-              onChange={handleInputChange}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               placeholder="Enter complete address"
               rows="3"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
@@ -187,7 +184,7 @@ const CreateShop = () => {
               >
                 <FiUpload className="text-orange-600 text-lg" />
                 <span className="text-orange-600 font-semibold">
-                  {formData.image ? "Change Image" : "Upload Image"}
+                  {image ? "Change Image" : "Upload Image"}
                 </span>
               </label>
             </div>
@@ -215,7 +212,6 @@ const CreateShop = () => {
           {/* Back Button */}
           <button
             type="button"
-            onClick={() => navigate("/my-shops")}
             className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300"
           >
             Cancel

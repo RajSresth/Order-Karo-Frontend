@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Auth Pages
@@ -19,6 +19,17 @@ import EditShop from "./pages/shop/EditShop";
 import CreateItem from "./pages/item/CreateItem";
 import EditItem from "./pages/item/EditItem";
 
+// Orders Page
+import Orders from "./pages/orders/Orders";
+
+
+
+// OrderHistory Page
+import OrderHistory from "./pages/orders/OrderHistory";
+
+// Outlet Page
+import HelpCenter from "./pages/outlet/HelpCenter";
+
 // Routes
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -30,7 +41,9 @@ import useGetCity from "./hooks/useGetCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 
 import OwnerDashboard from "./components/OwnerDashboard";
-import Orders from "./pages/orders/Orders";
+
+
+
 
 const App = () => {
   useGetCurrentUser();
@@ -63,14 +76,12 @@ const App = () => {
         <Route element={<OwnerRoute />}>
           <Route element={<OwnerDashboard />}>
             {/* Dashboard pages */}
+            <Route path="dashboard/create-shop" element={<CreateShop />} />
             <Route path="/dashboard/orders" element={<Orders />} />
-            <Route path="/dashboard/menu" element={<Menu />} />
-            <Route path="/dashboard/my-shops" ine element={<MyShops />} />
+            <Route path="/dashboard/my-shops" element={<MyShops />} />
             <Route path="/dashboard/order-history" element={<OrderHistory />} />
-            <Route path="/dashboard/outlet-info" element={<OutletInfo />} />
             <Route path="/dashboard/help" element={<HelpCenter />} />
 
-            <Route path="/create-shop" element={<CreateShop />} />
             <Route path="/edit-shop/:shopId" element={<EditShop />} />
             <Route path="/create-item" element={<CreateItem />} />
             <Route path="/edit-item/:itemId" element={<EditItem />} />
