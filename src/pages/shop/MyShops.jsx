@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { serverUrl } from "../../constants/constant";
 import { removeShop } from "../../redux/shopSlice";
@@ -35,7 +35,7 @@ const MyShops = () => {
         </div>
       </header>
 
-      {/* FIX 9 & 10: removed duplicate min-h-screen, added pt-8 so content does not clip under sticky header */}
+     
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-12">
         {/* Header */}
         <div className="flex justify-between items-center mb-14">
@@ -78,55 +78,31 @@ const MyShops = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shopData.map((shop) => (
-              <div
-                key={shop._id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-              >
-                {/* Shop Image */}
-                <div className="relative h-48 overflow-hidden bg-gray-200">
-                  <img
-                    src={shop.image}
-                    alt={shop.name}
-                    onError={(e) => (e.target.src = "/placeholder.png")}
-                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
+              <Link key={shop._id} to={`/dashboard/${shop.name}?id=${shop._id}`}>
+                   <div                      
+                      className="bg-white h-80 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+                    >
+                      {/* Shop Image */}
+                      <div className="relative h-48 overflow-hidden bg-gray-200">
+                        <img
+                          src={shop.image}
+                          alt={shop.name}
+                          onError={(e) => (e.target.src = "/placeholder.png")}
+                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
 
-                {/* Shop Info */}
-                <div className="p-4">
-                  <h2 className="text-xl font-bold text-gray-800 mb-2">
-                    {shop.name}
-                  </h2>
-                  <div className="space-y-1 text-gray-600 text-sm mb-4">
-                    <p>{shop.address}</p>
-                  </div>
-                </div>
-
-                {/* Items Preview */}
-                {shop.items && shop.items.length > 0 && (
-                  <div className="border-t p-4 bg-gray-50">
-                    <p className="text-xs font-semibold text-gray-700 mb-2">
-                      Recent Items:
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {shop.items.slice(0, 3).map((item, index) => (
-                        <span
-                          // FIX 11: fallback to index if _id is missing
-                          key={item._id ?? index}
-                          className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded"
-                        >
-                          {item.name}
-                        </span>
-                      ))}
-                      {shop.items.length > 3 && (
-                        <span className="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded">
-                          +{shop.items.length - 3} more
-                        </span>
-                      )}
+                      {/* Shop Info */}
+                      <div className="p-4">
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">
+                          {shop.name}
+                        </h2>
+                        <div className="space-y-1 text-gray-600 text-sm mb-4">
+                          <p>{shop.address}</p>
+                        </div>
+                      </div>                    
                     </div>
-                  </div>
-                )}
-              </div>
+              </Link>
             ))}
           </div>
         )}
