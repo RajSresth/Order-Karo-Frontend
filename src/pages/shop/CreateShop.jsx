@@ -3,10 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../../constants/constant";
 import { FiUpload } from "react-icons/fi";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { addShop } from "../../redux/shopSlice";
 
 const CreateShop = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     userData,
     city: userCity,
@@ -78,7 +80,9 @@ const CreateShop = () => {
         },
       );
 
+      dispatch(addShop(data.shop));
       alert(data.message);
+      navigate("/dashboard/my-shops");
       navigate("/dashboard/my-shops");
     } catch (error) {
       setError(error.response?.data?.message || "Error creating shop");
@@ -204,7 +208,7 @@ const CreateShop = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
           >
             {loading ? "Creating Shop..." : "Create Shop"}
           </button>
@@ -212,7 +216,7 @@ const CreateShop = () => {
           {/* Back Button */}
           <button
             type="button"
-            className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300"
+            className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300 hover:cursor-pointer"
           >
             Cancel
           </button>
