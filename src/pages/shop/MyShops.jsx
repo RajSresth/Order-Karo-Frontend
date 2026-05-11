@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -12,32 +11,6 @@ const MyShops = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const shopData = useSelector((state) => state.shop.shopData);
-
-  const [error, setError] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
-  // FIX 7: deleting is now per-shop ID instead of a global boolean
-  const [deletingId, setDeletingId] = useState(null);
-
-  const handleDeleteShop = async (shopId) => {
-    // FIX 5: clear previous error before retrying
-    setError("");
-    try {
-      setDeletingId(shopId); // FIX 7: track which shop is being deleted
-      const { data } = await axios.delete(
-        `${serverUrl}/api/shop/remove-shop/${shopId}`,
-        { withCredentials: true },
-      );
-      dispatch(removeShop(shopId));
-      setDeleteConfirm(null);
-      alert(data.message);
-    } catch (err) {
-      setError(err.response?.data?.message || "Error deleting shop");
-      // FIX 8: dismiss Yes/No buttons on failure so user cannot spam delete
-      setDeleteConfirm(null);
-    } finally {
-      setDeletingId(null); // FIX 7: reset per-shop deleting state
-    }
-  };
 
   if (!shopData) {
     return (
@@ -84,12 +57,6 @@ const MyShops = () => {
           </button>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-600 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-
         {/* Empty State */}
         {shopData.length === 0 ? (
           <div className="max-w-md mx-auto h-80 rounded-lg bg-white shadow-lg p-12 text-center">
@@ -131,67 +98,7 @@ const MyShops = () => {
                     {shop.name}
                   </h2>
                   <div className="space-y-1 text-gray-600 text-sm mb-4">
-                    <p>
-                      <span className="font-semibold">📍 Location:</span>{" "}
-                      {shop.city}, {shop.state}
-                    </p>
-                    <p>
-                      <span className="font-semibold">🏠 Address:</span>{" "}
-                      {shop.address}
-                    </p>
-                    <p>
-                      <span className="font-semibold">🍽️ Items:</span>{" "}
-                      <span className="text-orange-600 font-bold">
-                        {shop.items?.length || 0}
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    {/* FIX 6: all routes now consistently use /dashboard/ prefix */}
-                    <button
-                      onClick={() => navigate(`/dashboard/edit-shop/${shop._id}`)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-all duration-300"
-                    >
-                      <FiEdit2 className="text-lg" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() =>
-                        navigate(`/dashboard/create-item?shopId=${shop._id}`)
-                      }
-                      className="flex-1 py-2 px-3 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all duration-300"
-                    >
-                      <FiPlus className="inline mr-1" />
-                      Item
-                    </button>
-
-                    {deleteConfirm === shop._id ? (
-                      <div className="flex-1 flex gap-1">
-                        <button
-                          onClick={() => handleDeleteShop(shop._id)}
-                          // FIX 7: disable only the button of the shop being deleted
-                          disabled={deletingId === shop._id}
-                          className="flex-1 py-2 px-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-all text-xs disabled:opacity-50"
-                        >
-                          {deletingId === shop._id ? "..." : "Yes"}
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(null)}
-                          className="flex-1 py-2 px-2 bg-gray-400 text-white font-semibold rounded hover:bg-gray-500 transition-all text-xs"
-                        >
-                          No
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setDeleteConfirm(shop._id)}
-                        className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-all duration-300"
-                      >
-                        <FiTrash2 className="text-lg" />
-                      </button>
-                    )}
+                    <p>{shop.address}</p>
                   </div>
                 </div>
 
