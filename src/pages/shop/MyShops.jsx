@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { serverUrl } from "../../constants/constant";
 import { removeShop } from "../../redux/shopSlice";
 import { FiEdit2, FiTrash2, FiPlus, FiSearch } from "react-icons/fi";
+import { BsForkKnife } from "react-icons/bs";
+
 const MyShops = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -12,11 +15,14 @@ const MyShops = () => {
 
   const [error, setError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [deleting, setDeleting] = useState(false);
+  // FIX 7: deleting is now per-shop ID instead of a global boolean
+  const [deletingId, setDeletingId] = useState(null);
 
   const handleDeleteShop = async (shopId) => {
+    // FIX 5: clear previous error before retrying
+    setError("");
     try {
-      setDeleting(true);
+      setDeletingId(shopId); // FIX 7: track which shop is being deleted
       const { data } = await axios.delete(
         `${serverUrl}/api/shop/remove-shop/${shopId}`,
         { withCredentials: true },
@@ -26,8 +32,10 @@ const MyShops = () => {
       alert(data.message);
     } catch (err) {
       setError(err.response?.data?.message || "Error deleting shop");
+      // FIX 8: dismiss Yes/No buttons on failure so user cannot spam delete
+      setDeleteConfirm(null);
     } finally {
-      setDeleting(false);
+      setDeletingId(null); // FIX 7: reset per-shop deleting state
     }
   };
 
@@ -53,9 +61,11 @@ const MyShops = () => {
           />
         </div>
       </header>
-      <div className="max-w-6xl mx-auto">
+
+      {/* FIX 9 & 10: removed duplicate min-h-screen, added pt-8 so content does not clip under sticky header */}
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-12">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-14">
           <div>
             <h1 className="text-4xl font-bold text-orange-600 mb-2">
               My Shops
@@ -66,8 +76,8 @@ const MyShops = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate("/create-shop")}
-            className="flex items-center gap-2 py-3 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all duration-300"
+            onClick={() => navigate("/dashboard/create-shop")}
+            className="flex items-center gap-2 py-3 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 hover:cursor-pointer transition-all duration-300"
           >
             <FiPlus className="text-lg" />
             Create New Shop
@@ -82,13 +92,18 @@ const MyShops = () => {
 
         {/* Empty State */}
         {shopData.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+          <div className="max-w-md mx-auto h-80 rounded-lg bg-white shadow-lg p-12 text-center">
+            <div className="mb-6">
+              <div className="mx-auto rounded-full w-24 h-24 bg-orange-600 flex justify-center items-center">
+                <BsForkKnife size={45} />
+              </div>
+            </div>
             <p className="text-xl text-gray-600 font-semibold mb-4">
               You haven't created any shops yet
             </p>
             <button
-              onClick={() => navigate("/create-shop")}
-              className="py-3 px-8 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all"
+              onClick={() => navigate("/dashboard/create-shop")}
+              className="py-3 px-8 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 hover:cursor-pointer transition-all"
             >
               Create Your First Shop
             </button>
@@ -134,8 +149,9 @@ const MyShops = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
+                    {/* FIX 6: all routes now consistently use /dashboard/ prefix */}
                     <button
-                      onClick={() => navigate(`/edit-shop/${shop._id}`)}
+                      onClick={() => navigate(`/dashboard/edit-shop/${shop._id}`)}
                       className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-all duration-300"
                     >
                       <FiEdit2 className="text-lg" />
@@ -143,7 +159,7 @@ const MyShops = () => {
                     </button>
                     <button
                       onClick={() =>
-                        navigate(`/create-item?shopId=${shop._id}`)
+                        navigate(`/dashboard/create-item?shopId=${shop._id}`)
                       }
                       className="flex-1 py-2 px-3 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all duration-300"
                     >
@@ -155,10 +171,11 @@ const MyShops = () => {
                       <div className="flex-1 flex gap-1">
                         <button
                           onClick={() => handleDeleteShop(shop._id)}
-                          disabled={deleting}
+                          // FIX 7: disable only the button of the shop being deleted
+                          disabled={deletingId === shop._id}
                           className="flex-1 py-2 px-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-all text-xs disabled:opacity-50"
                         >
-                          {deleting ? "..." : "Yes"}
+                          {deletingId === shop._id ? "..." : "Yes"}
                         </button>
                         <button
                           onClick={() => setDeleteConfirm(null)}
@@ -185,9 +202,10 @@ const MyShops = () => {
                       Recent Items:
                     </p>
                     <div className="flex flex-wrap gap-1">
-                      {shop.items.slice(0, 3).map((item) => (
+                      {shop.items.slice(0, 3).map((item, index) => (
                         <span
-                          key={item._id}
+                          // FIX 11: fallback to index if _id is missing
+                          key={item._id ?? index}
                           className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded"
                         >
                           {item.name}
