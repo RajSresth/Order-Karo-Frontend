@@ -78,7 +78,7 @@ const MyShops = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shopData.map((shop) => (
-              <Link key={shop._id} to={`/dashboard/${shop.name}?id=${shop._id}`}>
+              <Link key={shop._id} to={`/dashboard/shop/${shop._id}`}>
                    <div                      
                       className="bg-white h-80 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
                     >

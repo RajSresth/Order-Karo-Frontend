@@ -14,6 +14,7 @@ import Home from "./pages/Home";
 import MyShops from "./pages/shop/MyShops";
 import CreateShop from "./pages/shop/CreateShop";
 import EditShop from "./pages/shop/EditShop";
+import ShopDetails from "./pages/shop/ShopDetails";
 
 // Item Pages
 import CreateItem from "./pages/item/CreateItem";
@@ -41,6 +42,7 @@ import useGetCity from "./hooks/useGetCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 
 import OwnerDashboard from "./components/OwnerDashboard";
+
 
 
 
@@ -76,15 +78,16 @@ const App = () => {
         <Route element={<OwnerRoute />}>
           <Route element={<OwnerDashboard />}>
             {/* Dashboard pages */}
-            <Route path="dashboard/create-shop" element={<CreateShop />} />
+            <Route path="/dashboard/create-shop" element={<CreateShop />} />
             <Route path="/dashboard/orders" element={<Orders />} />
             <Route path="/dashboard/my-shops" element={<MyShops />} />
+            <Route path="/dashboard/shop/:shopId" element={<ShopDetails />} />
             <Route path="/dashboard/order-history" element={<OrderHistory />} />
             <Route path="/dashboard/help" element={<HelpCenter />} />
 
-            <Route path="/edit-shop/:shopId" element={<EditShop />} />
-            <Route path="/create-item" element={<CreateItem />} />
-            <Route path="/edit-item/:itemId" element={<EditItem />} />
+            <Route path="/dashboard/edit-shop/:shopId" element={<EditShop />} />
+            <Route path="/dashboard/create-item" element={<CreateItem />} />
+            <Route path="/dashboard/edit-item/:itemId" element={<EditItem />} />
 
             {/* Default redirect */}
             <Route
