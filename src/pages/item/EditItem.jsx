@@ -119,7 +119,12 @@ const EditItem = () => {
     e.preventDefault();
     setError("");
 
-    if (!formData.name || !formData.category || !formData.foodType || !formData.price) {
+    if (
+      !formData.name ||
+      !formData.category ||
+      !formData.foodType ||
+      !formData.price
+    ) {
       setError("All text fields are required");
       return;
     }
@@ -148,7 +153,7 @@ const EditItem = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       alert(data.message);
@@ -164,9 +169,12 @@ const EditItem = () => {
   const handleDelete = async () => {
     try {
       setDeleteLoading(true);
-      const { data } = await axios.delete(`${serverUrl}/api/item/remove-item/${itemId}`, {
-        withCredentials: true,
-      });
+      const { data } = await axios.delete(
+        `${serverUrl}/api/item/remove-item/${itemId}`,
+        {
+          withCredentials: true,
+        },
+      );
 
       alert(data.message);
       navigate("/my-shops");
@@ -182,7 +190,9 @@ const EditItem = () => {
   if (pageLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50">
-        <p className="text-orange-600 text-xl font-bold">Loading item details...</p>
+        <p className="text-orange-600 text-xl font-bold">
+          Loading item details...
+        </p>
       </div>
     );
   }
@@ -191,9 +201,12 @@ const EditItem = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4">
         <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md">
-          <p className="text-2xl font-bold text-red-600 mb-3">❌ Access Denied</p>
+          <p className="text-2xl font-bold text-red-600 mb-3">
+            ❌ Access Denied
+          </p>
           <p className="text-gray-600 font-semibold mb-6">
-            You don't have permission to edit this item. Only the shop owner can edit it.
+            You don't have permission to edit this item. Only the shop owner can
+            edit it.
           </p>
           <button
             onClick={() => navigate("/my-shops")}
@@ -296,7 +309,8 @@ const EditItem = () => {
                       : "border-2 border-gray-300 bg-white text-gray-700 hover:border-orange-600 hover:text-orange-600"
                   }`}
                 >
-                  {type === "veg" ? "🥬" : "🍗"} {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {type === "veg" ? "🥬" : "🍗"}{" "}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
               ))}
             </div>
@@ -360,7 +374,9 @@ const EditItem = () => {
             </button>
           ) : (
             <div className="p-4 bg-red-50 border-2 border-red-300 rounded-lg">
-              <p className="text-red-800 font-semibold mb-3">Are you sure? This cannot be undone.</p>
+              <p className="text-red-800 font-semibold mb-3">
+                Are you sure? This cannot be undone.
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"

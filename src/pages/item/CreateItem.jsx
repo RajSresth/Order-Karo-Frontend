@@ -157,6 +157,7 @@ const CreateItem = () => {
               value={formData.shopId}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              required
             >
               <option value="">-- Select a shop --</option>
               {shopData.map((shop) => (

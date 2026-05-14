@@ -38,6 +38,7 @@ const ShopDetail = () => {
     );
   }
 
+  // Shop Delete
   const handleDeleteShop = async () => {
     const confirmed = confirm(
       `"${shop.name}" Are you sure you want to delete this shop ?`,
@@ -57,6 +58,26 @@ const ShopDetail = () => {
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+
+  // Item Delete
+  const handleItemDelete = async (itemId) => {
+    try {
+      setDeleteLoading(true);
+      const { data } = await axios.delete(`${serverUrl}/api/item/remove-item/${itemId}`, {
+        withCredentials: true,
+      });
+
+      alert(data.message);
+      navigate("/dashboard/my-shops");
+    } catch (error) {
+      setError(error.response?.data?.message || "Error deleting item");
+      console.error("Delete Item Error:", error);}
+    // } finally {
+    //   setDeleteLoading(false);
+    //   setShowDeleteConfirm(false);
+    // }
   };
 
   return (
@@ -158,10 +179,10 @@ const ShopDetail = () => {
             {shop.items.map((item) => (
               <div
                 key={item._id}
-                className="bg-white flex rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
+                className="bg-white w-full flex rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
               >
-                {item.image && (
-                  <div className="h-50 overflow-hidden bg-gray-100">
+               
+                  <div className="h-50 w-50 overflow-hidden bg-gray-100">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -169,34 +190,45 @@ const ShopDetail = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                )}
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-bold text-gray-800 text-lg">
-                      {item.name}
-                    </h3>
-                    <span className="text-orange-600 font-bold text-lg">
-                      ₹{item.price}
-                    </span>
+               
+                <div className="p-4 grow flex items-start justify-between">
+                  <div className="flex flex-col items-start mb-1">
+                      <h3 className="font-bold text-gray-800 text-lg">
+                        {item.name}
+                      </h3>
+                      
+                       <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+                          {item.description}
+                      </p>
+                      <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+                        {item.category}
+                      </p>
+                  
+                      <div className="text-orange-600 font-bold text-lg">
+                        ₹{item.price}
+                      </div>
+
                   </div>
-                  {item.category && (
-                    <p className="text-gray-500 text-sm mb-3 line-clamp-2">
-                      {item.category}
-                    </p>
-                  )}
-                  {item.description && (
-                    <p className="text-gray-500 text-sm mb-3 line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-                  <button
-                    onClick={() => navigate(`/edit-item/${item._id}`)}
-                    className="w-full flex items-center justify-center gap-1 py-2 border border-orange-600 text-orange-600 text-sm font-bold rounded-lg hover:bg-orange-50 transition mt-2"
-                  >
-                    <FiEdit2 />
-                    Edit Item
-                  </button>
+                  
+                  <div className="self-center flex flex-col gap-3">
+                     <button
+                        onClick={() => navigate(`/dashboard/edit-item/${item._id}`)}
+                        className="w-12 h-12 flex items-center justify-center gap-1 py-2 border border-orange-600 text-orange-600 text-sm font-bold rounded-full hover:cursor-pointer hover:bg-orange-50 transition mt-2"
+                      >
+                        <FiEdit2 size={16} />
+                        
+                      </button>
+
+                      <button
+                        onClick={() => handleItemDelete(item._id)}
+                        className="w-12 h-12 flex items-center justify-center gap-1 py-2 border border-orange-600 text-orange-600 text-sm font-bold rounded-full hover:cursor-pointer hover:bg-orange-50 transition mt-2"
+                      >
+                        <FiTrash2 size={16} />
+                      
+                      </button>
+                  </div>
                 </div>
+                 
               </div>
             ))}
           </div>
