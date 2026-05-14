@@ -1,110 +1,77 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { serverUrl } from "../../constants/constant";
-import { FiUpload } from "react-icons/fi";
+import { setShopData } from "../../redux/shopSlice";
+import { FiUpload, FiArrowLeft } from "react-icons/fi";
 
 const EditShop = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { shopId } = useParams();
-  const currentUser = useSelector((state) => state.user.userData);
+
+  const shopData = useSelector((state) => state.shop.shopData);
+  const shop = shopData?.find((shop) => shop._id === shopId);
+
   const [formData, setFormData] = useState({
-    name: "",
-    city: "",
-    state: "",
-    address: "",
+    name: shop?.name || "",
+    city: shop?.city || "",
+    state: shop?.state || "",
+    address: shop?.address || "",
     image: null,
-    currentImage: "",
   });
-  const [imagePreview, setImagePreview] = useState(null);
+
+  const [imagePreview, setImagePreview] = useState(shop?.image || null);
   const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isOwner, setIsOwner] = useState(false);
 
-  useEffect(() => {
-    const fetchShop = async () => {
-      try {
-        const { data } = await axios.get(`${serverUrl}/api/shop/get-my-shop`, {
-          withCredentials: true,
-        });
-        const shop = data.shops.find((s) => s._id === shopId);
-        if (shop) {
-          // Check if current user is the owner
-          if (currentUser?._id !== shop.owner._id) {
-            setError("❌ You are not authorized to edit this shop");
-            setIsOwner(false);
-          } else {
-            setIsOwner(true);
-            setFormData({
-              name: shop.name,
-              city: shop.city,
-              state: shop.state,
-              address: shop.address,
-              image: null,
-              currentImage: shop.image,
-            });
-            setImagePreview(shop.image);
-          }
-        } else {
-          setError("Shop not found");
-        }
-      } catch (err) {
-        setError("Error fetching shop details");
-        console.error(err);
-      } finally {
-        setPageLoading(false);
-      }
-    };
-
-    fetchShop();
-  }, [shopId, currentUser]);
+  // if Shop is not present in Redux store
+  if (!shop) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-orange-50 gap-4">
+        <p className="text-gray-600 text-lg font-semibold">Shop not found.</p>
+        <button
+          onClick={() => navigate("/dashboard/my-shops")}
+          className="text-orange-600 font-bold underline"
+        >
+          Back to My Shops
+        </button>
+      </div>
+    );
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    setFormData((prev) => ({ ...prev, image: file }));
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (
-      !formData.name ||
-      !formData.city ||
-      !formData.state ||
-      !formData.address
-    ) {
-      setError("All text fields are required");
+    const { name, city, state, address } = formData;
+    if (!name.trim() || !city.trim() || !state.trim() || !address.trim()) {
+      setError("All fields are required.");
       return;
     }
 
     try {
       setLoading(true);
       const form = new FormData();
-      form.append("name", formData.name);
-      form.append("city", formData.city);
-      form.append("state", formData.state);
-      form.append("address", formData.address);
+      form.append("name", name);
+      form.append("city", city);
+      form.append("state", state);
+      form.append("address", address);
       if (formData.image) {
         form.append("image", formData.image);
       }
@@ -114,72 +81,49 @@ const EditShop = () => {
         form,
         {
           withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         },
       );
 
-      alert(data.message);
-      navigate("/my-shops");
-    } catch (error) {
-      setError(error.response?.data?.message || "Error updating shop");
-      console.error("Edit Shop Error:", error);
+      // Redux update karo - updated shop se purana replace karo
+      const updatedShops = shopData.map((s) =>
+        s._id === shopId ? data.shop : s,
+      );
+      dispatch(setShopData(updatedShops));
+
+      navigate(`/dashboard/shop/${shopId}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Error updating shop.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (pageLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-orange-50">
-        <p className="text-orange-600 text-xl font-bold">
-          Loading shop details...
-        </p>
-      </div>
-    );
-  }
-
-  if (!isOwner) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md">
-          <p className="text-2xl font-bold text-red-600 mb-3">
-            ❌ Access Denied
-          </p>
-          <p className="text-gray-600 font-semibold mb-6">
-            You don't have permission to edit this shop. Only the shop owner can
-            edit it.
-          </p>
-          <button
-            onClick={() => navigate("/my-shops")}
-            className="py-3 px-8 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all"
-          >
-            Back to My Shops
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <button
+          onClick={() => navigate(`/dashboard/shop/${shopId}`)}
+          className="flex items-center gap-2 text-slate-600 font-semibold hover:text-orange-600 transition mb-6"
+        >
+          <FiArrowLeft />
+          Back to Shop
+        </button>
+
         <h1 className="text-3xl font-bold text-center text-orange-600 mb-2">
-          Edit Your Shop
+          Edit Shop
         </h1>
-        <h2 className="text-center text-gray-500 text-md font-semibold mb-6">
-          Update shop information
-        </h2>
+        <p className="text-center text-gray-500 text-sm font-semibold mb-6">
+          Update your shop information
+        </p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border-l-4 border-red-600 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-100 border-l-4 border-red-600 text-red-700 rounded text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Shop Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-2">
               Shop Name <sup className="text-orange-600">*</sup>
@@ -194,7 +138,6 @@ const EditShop = () => {
             />
           </div>
 
-          {/* City */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-2">
               City <sup className="text-orange-600">*</sup>
@@ -209,7 +152,6 @@ const EditShop = () => {
             />
           </div>
 
-          {/* State */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-2">
               State <sup className="text-orange-600">*</sup>
@@ -224,7 +166,6 @@ const EditShop = () => {
             />
           </div>
 
-          {/* Address */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-2">
               Address <sup className="text-orange-600">*</sup>
@@ -239,57 +180,55 @@ const EditShop = () => {
             />
           </div>
 
-          {/* Image Upload */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-2">
-              Shop Image (Optional - Leave empty to keep current)
+              Shop Image{" "}
+              <span className="text-gray-400 font-normal">
+                (leave empty to keep current)
+              </span>
             </label>
-            <div className="relative">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                id="shop-image"
-              />
-              <label
-                htmlFor="shop-image"
-                className="cursor-pointer flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-orange-300 rounded-lg bg-orange-50 hover:bg-orange-100 transition-all duration-300"
-              >
-                <FiUpload className="text-orange-600 text-lg" />
-                <span className="text-orange-600 font-semibold">
-                  {formData.image ? "Change Image" : "Upload New Image"}
-                </span>
-              </label>
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              id="shop-image"
+            />
+            <label
+              htmlFor="shop-image"
+              className="cursor-pointer flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-orange-300 rounded-lg bg-orange-50 hover:bg-orange-100 transition-all duration-300"
+            >
+              <FiUpload className="text-orange-600 text-lg" />
+              <span className="text-orange-600 font-semibold">
+                {formData.image ? "Change Image" : "Upload New Image"}
+              </span>
+            </label>
             {imagePreview && (
-              <div className="mt-3 relative">
+              <div className="mt-3">
                 <img
                   src={imagePreview}
                   alt="Preview"
                   className="w-full h-48 object-cover rounded-lg"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.image ? "New image selected" : "Current shop image"}
+                  {formData.image ? "New image selected" : "Current image"}
                 </p>
               </div>
             )}
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className="w-full py-3 px-4 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Updating Shop..." : "Update Shop"}
+            {loading ? "Updating..." : "Update Shop"}
           </button>
 
-          {/* Back Button */}
           <button
             type="button"
-            onClick={() => navigate("/my-shops")}
-            className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300"
+            onClick={() => navigate(`/dashboard/shop/${shopId}`)}
+            className="w-full py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-all duration-300"
           >
             Cancel
           </button>

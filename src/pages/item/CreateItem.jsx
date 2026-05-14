@@ -1,137 +1,39 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { serverUrl } from "../../constants/constant";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  serverUrl,
+  ITEM_CATEGORIES,
+  FOOD_TYPES,
+} from "../../constants/constant";
 import { FiUpload } from "react-icons/fi";
-
-const ITEM_CATEGORIES = [
-  "snacks",
-  "Main Course",
-  "Desserts",
-  "Pizza",
-  "Burgers",
-  "Sandwiches",
-  "South Indian",
-  "Chinese",
-  "Fast Food",
-  "Others",
-];
-
-const FOOD_TYPES = ["veg", "non veg"];
+import { addItemToShop } from "../../redux/shopSlice";
 
 const CreateItem = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const [searchParams] = useSearchParams();
+  const preselectedShopId = searchParams.get("shopId");
+
+  const shopData = useSelector((state) => state.shop.shopData);
+
   const [formData, setFormData] = useState({
     name: "",
     category: "snacks",
     foodType: "veg",
     price: "",
-    shopId: "",
+    description: "",
+    shopId: preselectedShopId || shopData?.[0]?._id || "",
     image: null,
   });
-  const [shops, setShops] = useState([]);
+
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchShops = async () => {
-      try {
-        const { data } = await axios.get(`${serverUrl}/api/shop/get-my-shop`, {
-          withCredentials: true,
-        });
-        setShops(data.shops || []);
-        if (data.shops && data.shops.length > 0) {
-          setFormData((prev) => ({
-            ...prev,
-            shopId: data.shops[0]._id,
-          }));
-        }
-      } catch (err) {
-        setError("Error fetching shops");
-        console.error(err);
-      } finally {
-        setPageLoading(false);
-      }
-    };
-
-    fetchShops();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (
-      !formData.name ||
-      !formData.category ||
-      !formData.foodType ||
-      !formData.price ||
-      !formData.shopId ||
-      !formData.image
-    ) {
-      setError("All fields including image are required");
-      return;
-    }
-
-    if (isNaN(formData.price) || parseFloat(formData.price) < 0) {
-      setError("Price must be a valid positive number");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const form = new FormData();
-      form.append("name", formData.name);
-      form.append("category", formData.category);
-      form.append("foodType", formData.foodType);
-      form.append("price", formData.price);
-      form.append("shopId", formData.shopId);
-      form.append("image", formData.image);
-
-      const { data } = await axios.post(`${serverUrl}/api/item/create-item`, form, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      alert(data.message);
-      navigate("/my-shops");
-    } catch (error) {
-      setError(error.response?.data?.message || "Error creating item");
-      console.error("Create Item Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (pageLoading) {
+  // shopData is null means the hook hasn't resolved yet
+  if (shopData === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50">
         <p className="text-orange-600 text-xl font-bold">Loading shops...</p>
@@ -139,7 +41,8 @@ const CreateItem = () => {
     );
   }
 
-  if (shops.length === 0) {
+  // shopData is an empty array means user has no shops
+  if (shopData.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4">
         <div className="bg-white rounded-lg shadow-lg p-8 text-center">
@@ -147,7 +50,7 @@ const CreateItem = () => {
             You need to create a shop first before adding items
           </p>
           <button
-            onClick={() => navigate("/create-shop")}
+            onClick={() => navigate("/dashboard/create-shop")}
             className="py-3 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all"
           >
             Create Shop
@@ -156,6 +59,76 @@ const CreateItem = () => {
       </div>
     );
   }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFormData((prev) => ({ ...prev, image: file }));
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const { name, category, foodType, price, description, shopId, image } =
+      formData;
+
+    if (
+      !name ||
+      !category ||
+      !foodType ||
+      !price ||
+      !description ||
+      !shopId ||
+      !image
+    ) {
+      setError("All fields including image are required");
+      return;
+    }
+
+    if (isNaN(price) || parseFloat(price) < 0) {
+      setError("Price must be a valid positive number");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const form = new FormData();
+      form.append("name", name);
+      form.append("category", category);
+      form.append("foodType", foodType);
+      form.append("price", price);
+      form.append("description", description);
+      form.append("shopId", shopId);
+      form.append("image", image);
+
+      const { data } = await axios.post(
+        `${serverUrl}/api/item/create-item`,
+        form,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+
+      alert(data.message);
+      dispatch(addItemToShop({ shopId: formData.shopId, item: data?.item }));
+      navigate(`/dashboard/shop/${shopId}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Error creating item");
+      console.error("Create Item Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
@@ -186,7 +159,7 @@ const CreateItem = () => {
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
             >
               <option value="">-- Select a shop --</option>
-              {shops.map((shop) => (
+              {shopData.map((shop) => (
                 <option key={shop._id} value={shop._id}>
                   {shop.name}
                 </option>
@@ -245,6 +218,21 @@ const CreateItem = () => {
             />
           </div>
 
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
+              Description <sup className="text-orange-600">*</sup>
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Enter item description"
+              rows={3}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300 resize-none"
+            />
+          </div>
+
           {/* Food Type */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-3">
@@ -256,10 +244,7 @@ const CreateItem = () => {
                   key={type}
                   type="button"
                   onClick={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      foodType: type,
-                    }))
+                    setFormData((prev) => ({ ...prev, foodType: type }))
                   }
                   className={`py-2 px-3 rounded-lg font-semibold text-sm transition-all duration-300 cursor-pointer ${
                     formData.foodType === type
@@ -267,7 +252,8 @@ const CreateItem = () => {
                       : "border-2 border-gray-300 bg-white text-gray-700 hover:border-orange-600 hover:text-orange-600"
                   }`}
                 >
-                  {type === "veg" ? "🥬" : "🍗"} {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {type === "veg" ? "🥬" : "🍗"}{" "}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
               ))}
             </div>
@@ -278,26 +264,24 @@ const CreateItem = () => {
             <label className="block text-sm font-semibold text-gray-800 mb-2">
               Item Image <sup className="text-orange-600">*</sup>
             </label>
-            <div className="relative">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                id="item-image"
-              />
-              <label
-                htmlFor="item-image"
-                className="cursor-pointer flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-orange-300 rounded-lg bg-orange-50 hover:bg-orange-100 transition-all duration-300"
-              >
-                <FiUpload className="text-orange-600 text-lg" />
-                <span className="text-orange-600 font-semibold">
-                  {formData.image ? "Change Image" : "Upload Image"}
-                </span>
-              </label>
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              id="item-image"
+            />
+            <label
+              htmlFor="item-image"
+              className="cursor-pointer flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-orange-300 rounded-lg bg-orange-50 hover:bg-orange-100 transition-all duration-300"
+            >
+              <FiUpload className="text-orange-600 text-lg" />
+              <span className="text-orange-600 font-semibold">
+                {formData.image ? "Change Image" : "Upload Image"}
+              </span>
+            </label>
             {imagePreview && (
-              <div className="mt-3 relative">
+              <div className="mt-3">
                 <img
                   src={imagePreview}
                   alt="Preview"
@@ -308,7 +292,7 @@ const CreateItem = () => {
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -317,10 +301,10 @@ const CreateItem = () => {
             {loading ? "Creating Item..." : "Create Item"}
           </button>
 
-          {/* Back Button */}
+          {/* Cancel */}
           <button
             type="button"
-            onClick={() => navigate("/my-shops")}
+            onClick={() => navigate(`/dashboard/shop/${formData.shopId}`)}
             className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300"
           >
             Cancel

@@ -18,12 +18,12 @@ const ShopDetail = () => {
   const dispatch = useDispatch();
 
   const shopData = useSelector((state) => state.shop.shopData);
-  const shop = shopData?.find((s) => s._id === shopId);
+  const shop = shopData?.find((shop) => shop._id === shopId);
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Shop Redux mein nahi mila
+  // if Shop is not present in Redux store
   if (!shop) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-orange-50 gap-4">
@@ -39,9 +39,10 @@ const ShopDetail = () => {
   }
 
   const handleDeleteShop = async () => {
-    const confirmed = window.confirm(
+    const confirmed = confirm(
       `"${shop.name}" Are you sure you want to delete this shop ?`,
     );
+
     if (!confirmed) return;
 
     try {
@@ -71,17 +72,20 @@ const ShopDetail = () => {
         </button>
 
         <div className="flex items-center gap-3">
+          {/* Edit Shop */}
           <button
             onClick={() => navigate(`/dashboard/edit-shop/${shopId}`)}
-            className="flex items-center gap-2 px-4 py-2 border-2 border-orange-600 text-orange-600 font-bold rounded-lg hover:bg-orange-50 transition"
+            className="flex items-center gap-2 px-4 py-2 border-2 border-orange-600 text-orange-600 font-bold rounded-lg hover:cursor-pointer hover:bg-orange-50 transition"
           >
             <FiEdit2 />
             Edit Shop
           </button>
+
+          {/* Delete  Shop */}
           <button
             onClick={handleDeleteShop}
             disabled={deleteLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 hover:cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FiTrash2 />
             {deleteLoading ? "Deleting..." : "Delete Shop"}
@@ -113,7 +117,7 @@ const ShopDetail = () => {
             <div className="flex items-start gap-2 text-gray-500 text-sm mt-1">
               <FiMapPin className="mt-0.5 shrink-0 text-orange-600" />
               <span>
-                {shop.address}, {shop.city}, {shop.state}
+                {shop.address}, {shop.state}
               </span>
             </div>
           </div>
@@ -126,8 +130,8 @@ const ShopDetail = () => {
             <span className="text-orange-600">({shop.items?.length || 0})</span>
           </h2>
           <button
-            onClick={() => navigate(`/create-item?shopId=${shopId}`)}
-            className="flex items-center gap-2 py-2 px-5 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition"
+            onClick={() => navigate(`/dashboard/create-item?shopId=${shopId}`)}
+            className="flex items-center gap-2 py-2 px-5 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 hover:cursor-pointer transition"
           >
             <FiPlus />
             Add Item
@@ -141,21 +145,23 @@ const ShopDetail = () => {
               This shop has no items yet.
             </p>
             <button
-              onClick={() => navigate(`/create-item?shopId=${shopId}`)}
-              className="py-2 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition"
+              onClick={() =>
+                navigate(`/dashboard/create-item?shopId=${shopId}`)
+              }
+              className="py-2 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 hover:cursor-pointer transition"
             >
               Add Your First Item
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1  gap-5">
             {shop.items.map((item) => (
               <div
                 key={item._id}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
+                className="bg-white flex rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
               >
                 {item.image && (
-                  <div className="h-40 overflow-hidden bg-gray-100">
+                  <div className="h-50 overflow-hidden bg-gray-100">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -173,6 +179,11 @@ const ShopDetail = () => {
                       ₹{item.price}
                     </span>
                   </div>
+                  {item.category && (
+                    <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+                      {item.category}
+                    </p>
+                  )}
                   {item.description && (
                     <p className="text-gray-500 text-sm mb-3 line-clamp-2">
                       {item.description}

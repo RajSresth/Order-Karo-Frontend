@@ -7,33 +7,33 @@ import {
   FiClock,
   FiHome,
   FiHelpCircle,
-  FiLogOut
+  FiLogOut,
 } from "react-icons/fi";
 import { serverUrl } from "../constants/constant";
-import {setShopData} from "../redux/shopSlice"
+import { clearShopState, setShopData } from "../redux/shopSlice";
 import { useDispatch } from "react-redux";
-import axios from "axios"
+import axios from "axios";
 import { setCity, setUserData } from "../redux/userSlice";
-
 
 const OwnerDashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-const handleLogout = async () => {
-  try {
-     await axios.get(`${serverUrl}/api/auth/logout`, {
+  const handleLogout = async () => {
+    try {
+      await axios.get(`${serverUrl}/api/auth/logout`, {
         withCredentials: true,
       });
 
       dispatch(setUserData(null));
       dispatch(setCity(null));
       dispatch(setShopData(null));
+      dispatch(clearShopState());
       navigate("/login", { replace: true });
-  } catch (error) {
-    console.log("Logout Error:", error.response?.data || error.message);
-  }
-}
+    } catch (error) {
+      console.log("Logout Error:", error.response?.data || error.message);
+    }
+  };
 
   return (
     <div className="h-screen overflow-hidden bg-linear-to-br from-emerald-100 via-sky-100 to-slate-100">
@@ -47,9 +47,22 @@ const handleLogout = async () => {
               Restaurant Partner
             </p>
           </div>
-        
+
           {/* sidebar routes change*/}
           <div className="space-y-1 px-4">
+            <NavLink
+              to="/dashboard/my-shops"
+              className={({ isActive }) =>
+                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`
+              }
+            >
+              <FiHome className="text-xl" />
+              My Shops
+            </NavLink>
 
             <NavLink
               to="/dashboard/create-shop"
@@ -79,22 +92,6 @@ const handleLogout = async () => {
               Orders
             </NavLink>
 
-            
-
-            <NavLink
-              to="/dashboard/my-shops"
-              className={({ isActive }) =>
-                `flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-orange-50 text-orange-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`
-              }
-            >
-              <FiHome className="text-xl" />
-              My Shops
-            </NavLink>
-
             <NavLink
               to="/dashboard/order-history"
               className={({ isActive }) =>
@@ -106,9 +103,9 @@ const handleLogout = async () => {
               }
             >
               <FiClock className="text-xl" />
-             Order history
+              Order history
             </NavLink>
-  
+
             <NavLink
               to="/dashboard/help"
               className={({ isActive }) =>
@@ -120,13 +117,13 @@ const handleLogout = async () => {
               }
             >
               <FiHelpCircle className="text-xl" />
-             Help Center
+              Help Center
             </NavLink>
-            
           </div>
 
           <div className="mt-8 px-4">
-            <button className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:cursor-pointer hover:bg-red-50 hover:text-red-600"
+            <button
+              className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:cursor-pointer hover:bg-red-50 hover:text-red-600"
               onClick={handleLogout}
             >
               <FiLogOut className="text-xl" />
@@ -136,15 +133,10 @@ const handleLogout = async () => {
         </aside>
 
         <section className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-slate-50">
-          
-
           <main className="flex min-h-0 flex-1 flex-col overflow-hidden ">
-         
-
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto ">
-              <Outlet/>
+              <Outlet />
             </div>
-              
           </main>
         </section>
       </div>
@@ -153,7 +145,6 @@ const handleLogout = async () => {
 };
 
 export default OwnerDashboard;
-
 
 /**
  * {orders.map((order) => (

@@ -23,8 +23,6 @@ import EditItem from "./pages/item/EditItem";
 // Orders Page
 import Orders from "./pages/orders/Orders";
 
-
-
 // OrderHistory Page
 import OrderHistory from "./pages/orders/OrderHistory";
 
@@ -42,10 +40,6 @@ import useGetCity from "./hooks/useGetCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 
 import OwnerDashboard from "./components/OwnerDashboard";
-
-
-
-
 
 const App = () => {
   useGetCurrentUser();
@@ -92,7 +86,7 @@ const App = () => {
             {/* Default redirect */}
             <Route
               index
-              element={<Navigate to="/dashboard/orders" replace />}
+              element={<Navigate to="/dashboard/my-shops" replace />}
             />
           </Route>
         </Route>
