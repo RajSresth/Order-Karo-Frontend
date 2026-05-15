@@ -1,15 +1,10 @@
-import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { serverUrl } from "../../constants/constant";
-import { removeShop } from "../../redux/shopSlice";
-import { FiEdit2, FiTrash2, FiPlus, FiSearch } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { FiPlus, FiSearch } from "react-icons/fi";
 import { BsForkKnife } from "react-icons/bs";
 
 const MyShops = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const shopData = useSelector((state) => state.shop.shopData);
 
   if (!shopData) {
@@ -35,7 +30,6 @@ const MyShops = () => {
         </div>
       </header>
 
-     
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-12">
         {/* Header */}
         <div className="flex justify-between items-center mb-14">
@@ -79,29 +73,40 @@ const MyShops = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shopData.map((shop) => (
               <Link key={shop._id} to={`/dashboard/shop/${shop._id}`}>
-                   <div                      
-                      className="bg-white h-80 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+                <div className="bg-white h-80 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                  {/* Shop Image */}
+                  <div className="relative h-48 overflow-hidden bg-gray-200">
+                    <img
+                      src={shop.image}
+                      alt={shop.name}
+                      onError={(e) => (e.target.src = "/placeholder.png")}
+                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                    />
+                    {/* Open/Closed badge on image */}
+                    <span
+                      className={`absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full ${
+                        shop.isOpen
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-500 text-white"
+                      }`}
                     >
-                      {/* Shop Image */}
-                      <div className="relative h-48 overflow-hidden bg-gray-200">
-                        <img
-                          src={shop.image}
-                          alt={shop.name}
-                          onError={(e) => (e.target.src = "/placeholder.png")}
-                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                        />
-                      </div>
+                      {shop.isOpen ? "Open" : "Closed"}
+                    </span>
+                  </div>
 
-                      {/* Shop Info */}
-                      <div className="p-4">
-                        <h2 className="text-xl font-bold text-gray-800 mb-2">
-                          {shop.name}
-                        </h2>
-                        <div className="space-y-1 text-gray-600 text-sm mb-4">
-                          <p>{shop.address}</p>
-                        </div>
-                      </div>                    
-                    </div>
+                  {/* Shop Info */}
+                  <div className="p-4">
+                    <h2 className="text-xl font-bold text-gray-800 mb-1">
+                      {shop.name}
+                    </h2>
+                    <p className="text-gray-500 text-sm mb-1">{shop.address}</p>
+                    {shop.openTime && shop.closeTime && (
+                      <p className="text-gray-400 text-xs">
+                        {shop.openTime} - {shop.closeTime}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </Link>
             ))}
           </div>

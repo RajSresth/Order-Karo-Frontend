@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { serverUrl } from "../../constants/constant";
-import { setShopData } from "../../redux/shopSlice";
+import { updateShop } from "../../redux/shopSlice";
 import { FiUpload, FiArrowLeft } from "react-icons/fi";
 
 const EditShop = () => {
@@ -19,6 +19,8 @@ const EditShop = () => {
     city: shop?.city || "",
     state: shop?.state || "",
     address: shop?.address || "",
+    openTime: shop?.openTime || "11:00",
+    closeTime: shop?.closeTime || "23:00",
     image: null,
   });
 
@@ -26,7 +28,6 @@ const EditShop = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // if Shop is not present in Redux store
   if (!shop) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-orange-50 gap-4">
@@ -68,10 +69,12 @@ const EditShop = () => {
     try {
       setLoading(true);
       const form = new FormData();
-      form.append("name", name);
-      form.append("city", city);
-      form.append("state", state);
-      form.append("address", address);
+      form.append("name", formData.name);
+      form.append("city", formData.city);
+      form.append("state", formData.state);
+      form.append("address", formData.address);
+      form.append("openTime", formData.openTime);
+      form.append("closeTime", formData.closeTime);
       if (formData.image) {
         form.append("image", formData.image);
       }
@@ -85,12 +88,7 @@ const EditShop = () => {
         },
       );
 
-      // Redux update karo - updated shop se purana replace karo
-      const updatedShops = shopData.map((s) =>
-        s._id === shopId ? data.shop : s,
-      );
-      dispatch(setShopData(updatedShops));
-
+      dispatch(updateShop(data.shop));
       navigate(`/dashboard/shop/${shopId}`);
     } catch (err) {
       setError(err.response?.data?.message || "Error updating shop.");
@@ -178,6 +176,34 @@ const EditShop = () => {
               rows="3"
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
             />
+          </div>
+
+          {/* Opening and Closing Time */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
+                Opening Time <sup className="text-orange-600">*</sup>
+              </label>
+              <input
+                type="time"
+                name="openTime"
+                value={formData.openTime}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
+                Closing Time <sup className="text-orange-600">*</sup>
+              </label>
+              <input
+                type="time"
+                name="closeTime"
+                value={formData.closeTime}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              />
+            </div>
           </div>
 
           <div>
