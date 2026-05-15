@@ -101,8 +101,8 @@ const MyShops = () => {
                     </h2>
                     <p className="text-gray-500 text-sm mb-1">{shop.address}</p>
                     {shop.openTime && shop.closeTime && (
-                      <p className="text-gray-400 text-xs">
-                        {shop.openTime} - {shop.closeTime}
+                      <p className="text-red-700 font-semibold text-xs">
+                        Opens at {shop.openTime} am
                       </p>
                     )}
                   </div>
