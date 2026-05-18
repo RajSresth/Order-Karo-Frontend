@@ -12,7 +12,7 @@ import { addItemToShop } from "../../redux/shopSlice";
 
 const CreateItem = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const preselectedShopId = searchParams.get("shopId");
 
@@ -297,7 +297,7 @@ const CreateItem = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 hover:cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating Item..." : "Create Item"}
           </button>
@@ -306,7 +306,7 @@ const CreateItem = () => {
           <button
             type="button"
             onClick={() => navigate(`/dashboard/shop/${formData.shopId}`)}
-            className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300"
+            className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 hover:cursor-pointer transition-all duration-300"
           >
             Cancel
           </button>

@@ -3,12 +3,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Auth Pages
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
-import ForgetPassword from "./pages/ForgetPassword";
+import Signup from "./pages/auth/Signup";
+import Login from "./pages/auth/Login";
+import ForgetPassword from "./pages/auth/ForgetPassword";
 
 // App Pages
-import Home from "./pages/Home";
+import Home from "./pages/auth/Home";
 
 // Shop Pages
 import MyShops from "./pages/shop/MyShops";

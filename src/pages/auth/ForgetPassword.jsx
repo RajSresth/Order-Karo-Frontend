@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
-import { serverUrl } from "../constants/constant";
+import { serverUrl } from "../../constants/constant";
 
 const ForgetPassword = () => {
   const [step, setStep] = useState(1);
@@ -14,47 +14,44 @@ const ForgetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
-  const handleSendOtp = async ( ) => {
+  const handleSendOtp = async () => {
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
         {
-          email
+          email,
         },
         { withCredential: true },
-      );          
-      console.log("response:",response);
-      setStep(2)
-
+      );
+      console.log("response:", response);
+      setStep(2);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const handleVerifyOtp = async ( ) => {
-     try {
+  const handleVerifyOtp = async () => {
+    try {
       const response = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
         {
           email,
-          otp
+          otp,
         },
         { withCredential: true },
-      );          
-      console.log("response:",response);
-      setStep(3)
-
+      );
+      console.log("response:", response);
+      setStep(3);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const handleResetPassword = async ( ) => {
-     try {
-      if(newPassword !== confirmPassword)
-      {
+  const handleResetPassword = async () => {
+    try {
+      if (newPassword !== confirmPassword) {
         return alert("Password Mismatch");
       }
 
@@ -62,17 +59,16 @@ const ForgetPassword = () => {
         `${serverUrl}/api/auth/reset-password`,
         {
           email,
-          newPassword
+          newPassword,
         },
         { withCredential: true },
-      );          
-      console.log("response:",response);
-      navigate("/login",{replace:true});
-
+      );
+      console.log("response:", response);
+      navigate("/login", { replace: true });
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
@@ -161,7 +157,7 @@ const ForgetPassword = () => {
                 htmlFor="newPassword"
                 className="block text-sm font-semibold text-gray-800 mb-2"
               >
-                New Password 
+                New Password
                 <sup className="text-orange-600 text-[16px]">*</sup>
               </label>
               <div className="relative">
@@ -223,8 +219,6 @@ const ForgetPassword = () => {
             </button>
           </div>
         )}
-
-       
       </div>
     </div>
   );

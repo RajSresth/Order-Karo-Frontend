@@ -16,22 +16,22 @@ const CreateShop = () => {
     address: userAddress,
   } = useSelector((state) => state.user);
 
-  // Ye add karo
+  const [name, setName] = useState("");
+  const [city, setCity] = useState(userCity || "");
+  const [state, setState] = useState(userState || "");
+  const [address, setAddress] = useState(userAddress || "");
+  const [openTime, setOpenTime] = useState("11:00");
+  const [closeTime, setCloseTime] = useState("23:00");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   useEffect(() => {
     if (userCity) setCity(userCity);
     if (userState) setState(userState);
     if (userAddress) setAddress(userAddress);
   }, [userCity, userState, userAddress]);
-
-  const [name, setName] = useState("");
-  const [city, setCity] = useState(userCity || "");
-  const [state, setState] = useState(userState || "");
-  const [address, setAddress] = useState(userAddress || "");
-  const [image, setImage] = useState(null);
-
-  const [imagePreview, setImagePreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -54,6 +54,8 @@ const CreateShop = () => {
       !city.trim() ||
       !state.trim() ||
       !address.trim() ||
+      !openTime ||
+      !closeTime ||
       !image
     ) {
       setError("All fields including image are required");
@@ -67,6 +69,8 @@ const CreateShop = () => {
       form.append("city", city);
       form.append("state", state);
       form.append("address", address);
+      form.append("openTime", openTime);
+      form.append("closeTime", closeTime);
       form.append("image", image);
 
       const { data } = await axios.post(
@@ -82,8 +86,7 @@ const CreateShop = () => {
 
       dispatch(addShop(data.shop));
       alert(data.message);
-      navigate("/dashboard/my-shops");
-      navigate("/dashboard/my-shops");
+      navigate("/dashboard/my-shops"); 
     } catch (error) {
       setError(error.response?.data?.message || "Error creating shop");
       console.error("Create Shop Error:", error);
@@ -95,7 +98,7 @@ const CreateShop = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl text-center gap-16 font-bold text-orange-600 mb-2">
+        <h1 className="text-2xl text-center font-bold text-orange-600 mb-2">
           Create Your Shop
         </h1>
         <h2 className="text-center text-gray-500 text-md font-semibold mb-6">
@@ -169,6 +172,34 @@ const CreateShop = () => {
             />
           </div>
 
+          {/* Opening and Closing Time */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
+                Opening Time <sup className="text-orange-600">*</sup>
+              </label>
+              <input
+                type="time"
+                name="openTime"
+                value={openTime}
+                onChange={(e) => setOpenTime(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
+                Closing Time <sup className="text-orange-600">*</sup>
+              </label>
+              <input
+                type="time"
+                name="closeTime"
+                value={closeTime}
+                onChange={(e) => setCloseTime(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+              />
+            </div>
+          </div>
+
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-semibold text-gray-800 mb-2">
@@ -216,6 +247,7 @@ const CreateShop = () => {
           {/* Back Button */}
           <button
             type="button"
+            onClick={() => navigate("/dashboard/my-shops")}
             className="w-full py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-300 hover:cursor-pointer"
           >
             Cancel

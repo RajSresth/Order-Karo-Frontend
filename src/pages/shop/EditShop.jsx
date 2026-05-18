@@ -60,8 +60,17 @@ const EditShop = () => {
     e.preventDefault();
     setError("");
 
-    const { name, city, state, address } = formData;
-    if (!name.trim() || !city.trim() || !state.trim() || !address.trim()) {
+    const { name, city, state, address, openTime, closeTime } = formData;
+
+    // FIX: openTime aur closeTime bhi validate kar rahe hain
+    if (
+      !name.trim() ||
+      !city.trim() ||
+      !state.trim() ||
+      !address.trim() ||
+      !openTime ||
+      !closeTime
+    ) {
       setError("All fields are required.");
       return;
     }
@@ -85,10 +94,14 @@ const EditShop = () => {
         {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" },
-        },
+        }
       );
 
       dispatch(updateShop(data.shop));
+
+      // FIX: User ko feedback do update hone ka
+      alert(data.message || "Shop updated successfully!");
+
       navigate(`/dashboard/shop/${shopId}`);
     } catch (err) {
       setError(err.response?.data?.message || "Error updating shop.");
@@ -178,7 +191,6 @@ const EditShop = () => {
             />
           </div>
 
-          {/* Opening and Closing Time */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-800 mb-2">

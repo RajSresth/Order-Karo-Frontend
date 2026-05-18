@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
-import { validRoles,serverUrl } from "../constants/constant";
+import { Link, useNavigate } from "react-router-dom";
+import { validRoles, serverUrl } from "../../constants/constant";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
-import {signInWithPopup} from "firebase/auth";
-import {provider,auth} from "../../firebase"
+import { signInWithPopup } from "firebase/auth";
+import { provider, auth } from "../../../firebase";
 
 const Signup = () => {
   const [role, setRole] = useState("user");
@@ -15,7 +15,7 @@ const Signup = () => {
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSignupForm = async (e) => {
     e.preventDefault();
@@ -33,9 +33,8 @@ const Signup = () => {
         { withCredential: true },
       );
 
-      console.log("response:",response);
-      navigate("/login",{replace:true})
-      
+      console.log("response:", response);
+      navigate("/login", { replace: true });
     } catch (error) {
       console.log(error);
     }
@@ -43,25 +42,28 @@ const Signup = () => {
 
   const handleGoogleAuthSignup = async () => {
     try {
-          if(!mobile)
-          {
-            return alert("Please enter mobile number first");
-          }
-          
-          const result = await signInWithPopup(auth,provider);
-          const {data} = await axios.post(`${serverUrl}/api/auth/google-auth-signup`,{
-            fullname: result?.user?.displayName,
-            email:result?.user?.email,
-            mobile,
-            role
-          },{withCredentials: true});
+      if (!mobile) {
+        return alert("Please enter mobile number first");
+      }
 
-          console.log("data:",data);
+      const result = await signInWithPopup(auth, provider);
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth-signup`,
+        {
+          fullname: result?.user?.displayName,
+          email: result?.user?.email,
+          mobile,
+          role,
+        },
+        { withCredentials: true },
+      );
+
+      console.log("data:", data);
     } catch (error) {
-        console.log("Google Signup Error:",error?.response?.data?.message);
-        console.log("Full Error Data:", error.response?.data);
+      console.log("Google Signup Error:", error?.response?.data?.message);
+      console.log("Full Error Data:", error.response?.data);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">

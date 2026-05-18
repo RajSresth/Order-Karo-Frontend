@@ -2,58 +2,61 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { validRoles,serverUrl } from "../constants/constant";
+import { validRoles, serverUrl } from "../../constants/constant";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {signInWithPopup} from "firebase/auth";
-import {provider,auth} from "../../firebase";
+import { signInWithPopup } from "firebase/auth";
+import { provider, auth } from "../../../firebase";
 import { useDispatch } from "react-redux";
-import { setUserData } from "../redux/userSlice";
+import { setUserData } from "../../redux/userSlice";
 
 const Login = () => {
   const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLoginForm = async (e) => {
     e.preventDefault();
 
-     try {
-      const {data} = await axios.post(
+    try {
+      const { data } = await axios.post(
         `${serverUrl}/api/auth/login`,
         {
-          email,          
+          email,
           password,
           role,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
-          
-      dispatch(setUserData(data?.user));
-      navigate("/",{replace:true});
 
+      dispatch(setUserData(data?.user));
+      navigate("/", { replace: true });
     } catch (error) {
       console.log(error);
     }
   };
 
-   const handleGoogleAuthLogin = async () => {
-    try {                   
-          const result = await signInWithPopup(auth,provider);
-          const {data} = await axios.post(`${serverUrl}/api/auth/google-auth-login`,{           
-            email:result?.user?.email,            
-            role
-          },{withCredentials: true});
-          dispatch(setUserData(data?.user));
-          navigate("/",{replace:true});
+  const handleGoogleAuthLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth-login`,
+        {
+          email: result?.user?.email,
+          role,
+        },
+        { withCredentials: true },
+      );
+      dispatch(setUserData(data?.user));
+      navigate("/", { replace: true });
     } catch (error) {
-        console.log("Google Login Error:",error?.response?.data?.message);
-        console.log("Full Error Data:", error.response?.data);
+      console.log("Google Login Error:", error?.response?.data?.message);
+      console.log("Full Error Data:", error.response?.data);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-4 py-6">

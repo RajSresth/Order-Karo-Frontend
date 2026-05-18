@@ -1,10 +1,10 @@
 import React from "react";
-import UserDashboard from "../components/UserDashboard";
-import AdminDashboard from "../components/AdminDashboard";
-import RiderDashboard from "../components/RiderDashboard";
-import OwnerDashboard from "../components/OwnerDashboard";
+import UserDashboard from "../../components/UserDashboard";
+import AdminDashboard from "../../components/AdminDashboard";
+import RiderDashboard from "../../components/RiderDashboard";
+import OwnerDashboard from "../../components/OwnerDashboard";
 import { useSelector } from "react-redux";
-import Nav from "../components/Nav";
+import Nav from "../../components/Nav";
 
 const Home = () => {
   const userData = useSelector((state) => state.user.userData);
