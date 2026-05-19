@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   FiStar,
@@ -13,51 +13,44 @@ import Nav from "../components/Nav";
 
 const UserDashboard = () => {
   const userData = useSelector((state) => state.user.userData);
-  const restaurants = useSelector((state) => state.user.shopInMyCity); // reads from Redux
+  const restaurants = useSelector((state) => state.user.shopInMyCity);
   const loading = useSelector((state) => state.user.loading);
 
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
 
-
   useEffect(() => {
-    const filterRestaurants = () => {
-        let filtered = [...(restaurants || [])];
-
-        // search bar logic
-        if (searchTerm) {
-          filtered = filtered.filter((r) =>
-            r.name.toLowerCase().includes(searchTerm.toLowerCase()),
-          );
-        }
-        if (activeFilter === "rating") {
-          filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        } 
-        else if (activeFilter === "delivery") {
-          filtered.sort(
-            (a, b) =>
-              (parseInt(a.deliveryTime) || 0) - (parseInt(b.deliveryTime) || 0),
-          );
-        } 
-        else if (activeFilter === "price") {
-          filtered.sort((a, b) => {
-            const priceA = parseInt(
-              (a.priceForTwo || "0").toString().replace(/[^0-9]/g, ""),
-            );
-            const priceB = parseInt(
-              (b.priceForTwo || "0").toString().replace(/[^0-9]/g, ""),
-            );
-            return priceA - priceB;
-          });
-        }
-        setFilteredRestaurants(filtered);
-      };
-      
     filterRestaurants();
   }, [searchTerm, activeFilter, restaurants]);
 
-  
+  const filterRestaurants = () => {
+    let filtered = [...(restaurants || [])];
+    if (searchTerm) {
+      filtered = filtered.filter((r) =>
+        r.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+    if (activeFilter === "rating") {
+      filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (activeFilter === "delivery") {
+      filtered.sort(
+        (a, b) =>
+          (parseInt(a.deliveryTime) || 0) - (parseInt(b.deliveryTime) || 0),
+      );
+    } else if (activeFilter === "price") {
+      filtered.sort((a, b) => {
+        const priceA = parseInt(
+          (a.priceForTwo || "0").toString().replace(/[^0-9]/g, ""),
+        );
+        const priceB = parseInt(
+          (b.priceForTwo || "0").toString().replace(/[^0-9]/g, ""),
+        );
+        return priceA - priceB;
+      });
+    }
+    setFilteredRestaurants(filtered);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,16 +110,15 @@ const UserDashboard = () => {
                   key={restaurant._id}
                   className={`group bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 ${isClosed ? "opacity-75" : "hover:shadow-lg"}`}
                 >
-                  <div
-                    className={`relative h-48 overflow-hidden ${isClosed ? "grayscale" : ""}`}
-                  >
+                  {/* Image Section */}
+                  <div className="relative h-48 overflow-hidden">
                     <img
                       src={
                         restaurant.image ||
                         "https://via.placeholder.com/300x200"
                       }
                       alt={restaurant.name}
-                      className="w-full h-full object-cover transition-transform duration-300"
+                      className={`w-full h-full object-cover transition-transform duration-300 ${isClosed ? "grayscale opacity-60" : "group-hover:scale-105"}`}
                     />
                     <button
                       className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition"
@@ -134,14 +126,16 @@ const UserDashboard = () => {
                     >
                       <FiHeart className="text-gray-500 hover:text-red-500" />
                     </button>
+
+                    {/* Small badge instead of full overlay */}
                     {isClosed && (
-                      <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-                        <span className="text-white font-bold px-4 py-2 bg-red-600 rounded-full text-sm">
-                          🚫 Closed Now
-                        </span>
-                      </div>
+                      <span className="absolute bottom-2 left-2 text-white text-xs font-bold px-3 py-1 bg-red-600 rounded-full">
+                        🚫 Closed Now
+                      </span>
                     )}
                   </div>
+
+                  {/* Card Body */}
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-1">
                       <h3
@@ -168,6 +162,7 @@ const UserDashboard = () => {
                         <span>{restaurant.deliveryTime || "30"} min</span>
                       </div>
                     </div>
+
                     {isClosed ? (
                       <button
                         className="w-full mt-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-semibold cursor-not-allowed"
