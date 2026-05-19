@@ -40,13 +40,14 @@ import useGetCity from "./hooks/useGetCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 
 import OwnerDashboard from "./components/OwnerDashboard";
+import useGetShopInMyCity from "./hooks/useGetShopInMyCity";
 
 const App = () => {
   useGetCurrentUser();
   useGetCity();
   useGetMyShop();
+  useGetShopInMyCity();
   const loading = useSelector((state) => state.user.loading);
-  console.log("loading:",loading)
 
   if (loading) {
     return (
