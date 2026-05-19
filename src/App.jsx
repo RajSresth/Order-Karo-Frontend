@@ -46,6 +46,7 @@ const App = () => {
   useGetCity();
   useGetMyShop();
   const loading = useSelector((state) => state.user.loading);
+  console.log("loading:",loading)
 
   if (loading) {
     return (
@@ -70,7 +71,7 @@ const App = () => {
 
         {/* Owner Only Routes */}
         <Route element={<OwnerRoute />}>
-          <Route element={<OwnerDashboard />}>
+          <Route path="/dashboard" element={<OwnerDashboard />}>
             {/* Dashboard pages */}
             <Route path="/dashboard/create-shop" element={<CreateShop />} />
             <Route path="/dashboard/orders" element={<Orders />} />

@@ -5,18 +5,22 @@ import RiderDashboard from "../../components/RiderDashboard";
 import OwnerDashboard from "../../components/OwnerDashboard";
 import { useSelector } from "react-redux";
 import Nav from "../../components/Nav";
+import { Navigate } from "react-router-dom";
 
 const Home = () => {
   const userData = useSelector((state) => state.user.userData);
 
+  // Owner ko dashboard pe redirect karo
+  if (userData?.role === "owner") {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <div className="w-full min-h-screen ">
-      {userData?.role === "user" && <Nav />}
       {userData?.role === "user" && <UserDashboard />}
 
       {userData?.role === "admin" && <AdminDashboard />}
       {userData?.role === "rider" && <RiderDashboard />}
-      {userData?.role === "owner" && <OwnerDashboard />}
     </div>
   );
 };
