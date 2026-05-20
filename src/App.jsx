@@ -42,6 +42,9 @@ import useGetMyShop from "./hooks/useGetMyShop";
 import OwnerDashboard from "./components/OwnerDashboard";
 import useGetShopInMyCity from "./hooks/useGetShopInMyCity";
 
+// RestaurantPage
+import RestaurantPage from "./pages/outlet/RestaurantPage";
+
 const App = () => {
   useGetCurrentUser();
   useGetCity();
@@ -69,6 +72,8 @@ const App = () => {
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Home />} />
+        <Route path="/restaurant/:restaurantId" element={<RestaurantPage />} />
+
 
         {/* Owner Only Routes */}
         <Route element={<OwnerRoute />}>

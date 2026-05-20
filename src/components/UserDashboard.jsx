@@ -56,7 +56,7 @@ const UserDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Nav onSearch={setSearchTerm} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-linear-to-r from-orange-500 to-orange-600 rounded-2xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 mb-8 text-white">
           <h1 className="text-2xl lg:text-3xl font-bold mb-2">
             Hello, {userData?.fullname?.split(" ")[0] || "Foodie"}! 👋
           </h1>
@@ -102,13 +102,14 @@ const UserDashboard = () => {
             <p className="text-gray-500 text-lg">No restaurants found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredRestaurants.map((restaurant) => {
               const isClosed = !restaurant.isOpen;
               return (
+                // FIX 1: card ko flex flex-col banao
                 <div
                   key={restaurant._id}
-                  className={`group bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 ${isClosed ? "opacity-75" : "hover:shadow-lg"}`}
+                  className={`group bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 flex flex-col ${isClosed ? "opacity-75" : "hover:shadow-lg"}`}
                 >
                   {/* Image Section */}
                   <div className="relative h-48 overflow-hidden">
@@ -127,7 +128,6 @@ const UserDashboard = () => {
                       <FiHeart className="text-gray-500 hover:text-red-500" />
                     </button>
 
-                    {/* Small badge instead of full overlay */}
                     {isClosed && (
                       <span className="absolute bottom-2 left-2 text-white text-xs font-bold px-3 py-1 bg-red-600 rounded-full">
                         🚫 Closed Now
@@ -135,8 +135,7 @@ const UserDashboard = () => {
                     )}
                   </div>
 
-                  {/* Card Body */}
-                  <div className="p-4">
+                  <div className="p-4 flex flex-col flex-1">
                     <div className="flex justify-between items-start mb-1">
                       <h3
                         className={`font-bold text-lg ${isClosed ? "text-gray-500" : "text-gray-800 group-hover:text-orange-500"} transition`}
@@ -148,11 +147,13 @@ const UserDashboard = () => {
                         <span>{restaurant.rating || "New"}</span>
                       </div>
                     </div>
+
                     <p
                       className={`text-sm mb-2 line-clamp-1 ${isClosed ? "text-gray-400" : "text-gray-500"}`}
                     >
                       {restaurant.cuisine || "Various"}
                     </p>
+
                     <div
                       className={`flex justify-between items-center text-sm ${isClosed ? "text-gray-400" : "text-gray-600"}`}
                     >
@@ -163,20 +164,23 @@ const UserDashboard = () => {
                       </div>
                     </div>
 
-                    {isClosed ? (
-                      <button
-                        className="w-full mt-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-semibold cursor-not-allowed"
-                        disabled
-                      >
-                        Currently Closed
-                      </button>
-                    ) : (
-                      <Link to={`/restaurant/${restaurant._id}`}>
-                        <button className="w-full mt-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition">
-                          Order Now
+                    {/* FIX 3: yeh div mt-auto lega — direct flex child hai */}
+                    <div className="mt-auto pt-4">
+                      {isClosed ? (
+                        <button
+                          className="w-full py-2 bg-gray-300 text-gray-500 rounded-lg font-semibold cursor-not-allowed"
+                          disabled
+                        >
+                          Currently Closed
                         </button>
-                      </Link>
-                    )}
+                      ) : (
+                        <Link to={`/restaurant/${restaurant._id}`}>
+                          <button className="w-full py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 hover:cursor-pointer transition">
+                            Order Now
+                          </button>
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
