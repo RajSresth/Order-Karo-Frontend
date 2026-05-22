@@ -145,7 +145,7 @@ const CartPage = () => {
                     src={item.image}
                     alt={item.name}
                     onError={(e) => (e.target.src = "/placeholder.png")}
-                    className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                    className="w-14 h-14 rounded-lg object-cover shrink-0"
                   />
                 )}
                 <div className="flex-1 min-w-0">

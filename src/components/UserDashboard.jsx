@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
-  FiStar, FiClock, FiHeart, FiTrendingUp,
-  FiDollarSign, FiFilter, FiShoppingCart,
+  FiStar,
+  FiClock,
+  FiHeart,
+  FiTrendingUp,
+  FiDollarSign,
+  FiFilter,
+  FiShoppingCart,
 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import Nav from "../components/Nav";
@@ -10,14 +15,14 @@ import { selectTotalItems, selectTotalPrice } from "../redux/cartSlice";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
-  const userData    = useSelector((state) => state.user.userData);
+  const userData = useSelector((state) => state.user.userData);
   const restaurants = useSelector((state) => state.user.shopInMyCity);
-  const loading     = useSelector((state) => state.user.loading);
+  const loading = useSelector((state) => state.user.loading);
 
   // Cart badge — dashboard pe bhi dikhega agar cart mein kuch hai
   const totalItems = useSelector(selectTotalItems);
   const totalPrice = useSelector(selectTotalPrice);
-  const isUser     = userData?.role === "user";
+  const isUser = userData?.role === "user";
 
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,19 +36,24 @@ const UserDashboard = () => {
     let filtered = [...(restaurants || [])];
     if (searchTerm) {
       filtered = filtered.filter((r) =>
-        r.name.toLowerCase().includes(searchTerm.toLowerCase())
+        r.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
     if (activeFilter === "rating") {
       filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     } else if (activeFilter === "delivery") {
-      filtered.sort((a, b) =>
-        (parseInt(a.deliveryTime) || 0) - (parseInt(b.deliveryTime) || 0)
+      filtered.sort(
+        (a, b) =>
+          (parseInt(a.deliveryTime) || 0) - (parseInt(b.deliveryTime) || 0),
       );
     } else if (activeFilter === "price") {
       filtered.sort((a, b) => {
-        const priceA = parseInt((a.priceForTwo || "0").toString().replace(/[^0-9]/g, ""));
-        const priceB = parseInt((b.priceForTwo || "0").toString().replace(/[^0-9]/g, ""));
+        const priceA = parseInt(
+          (a.priceForTwo || "0").toString().replace(/[^0-9]/g, ""),
+        );
+        const priceB = parseInt(
+          (b.priceForTwo || "0").toString().replace(/[^0-9]/g, ""),
+        );
         return priceA - priceB;
       });
     }
@@ -55,7 +65,7 @@ const UserDashboard = () => {
       <Nav onSearch={setSearchTerm} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 mb-8 text-white">
+        <div className="bg-linear-to-r from-orange-500 to-orange-600 rounded-2xl p-6 mb-8 text-white">
           <h1 className="text-2xl lg:text-3xl font-bold mb-2">
             Hello, {userData?.fullname?.split(" ")[0] || "Foodie"}! 👋
           </h1>
@@ -113,7 +123,10 @@ const UserDashboard = () => {
                 >
                   <div className="relative h-48 overflow-hidden">
                     <img
-                      src={restaurant.image || "https://via.placeholder.com/300x200"}
+                      src={
+                        restaurant.image ||
+                        "https://via.placeholder.com/300x200"
+                      }
                       alt={restaurant.name}
                       className={`w-full h-full object-cover transition-transform duration-300 ${isClosed ? "grayscale opacity-60" : "group-hover:scale-105"}`}
                     />
@@ -132,7 +145,9 @@ const UserDashboard = () => {
 
                   <div className="p-4 flex flex-col flex-1">
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className={`font-bold text-lg ${isClosed ? "text-gray-500" : "text-gray-800 group-hover:text-orange-500"} transition`}>
+                      <h3
+                        className={`font-bold text-lg ${isClosed ? "text-gray-500" : "text-gray-800 group-hover:text-orange-500"} transition`}
+                      >
                         {restaurant.name}
                       </h3>
                       <div className="flex items-center gap-1 bg-green-100 px-2 py-0.5 rounded text-sm font-semibold text-green-700">
@@ -141,11 +156,15 @@ const UserDashboard = () => {
                       </div>
                     </div>
 
-                    <p className={`text-sm mb-2 line-clamp-1 ${isClosed ? "text-gray-400" : "text-gray-500"}`}>
+                    <p
+                      className={`text-sm mb-2 line-clamp-1 ${isClosed ? "text-gray-400" : "text-gray-500"}`}
+                    >
                       {restaurant.cuisine || "Various"}
                     </p>
 
-                    <div className={`flex justify-between items-center text-sm ${isClosed ? "text-gray-400" : "text-gray-600"}`}>
+                    <div
+                      className={`flex justify-between items-center text-sm ${isClosed ? "text-gray-400" : "text-gray-600"}`}
+                    >
                       <span>₹{restaurant.priceForTwo || "200"} for two</span>
                       <div className="flex items-center gap-1">
                         <FiClock className="text-gray-400" />
