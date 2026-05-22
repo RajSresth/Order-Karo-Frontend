@@ -288,8 +288,6 @@ const RestaurantPage = () => {
           </div>
         )}
       </div>
-
-
     </div>
   );
 };

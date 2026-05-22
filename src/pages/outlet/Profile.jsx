@@ -13,6 +13,8 @@ import {
   FiPhone,
   FiMapPin,
   FiShoppingBag,
+  FiFileText,
+  FiHeart,
 } from "react-icons/fi";
 import { setUserData } from "../../redux/userSlice";
 import { serverUrl } from "../../constants/constant";
@@ -128,7 +130,7 @@ const Profile = () => {
       key: "address",
       label: "Address",
       icon: FiMapPin,
-      value: address,
+      value: userData?.address || address, // DB first, geoAPI fallback
       editable: true,
     },
   ];
@@ -302,7 +304,37 @@ const Profile = () => {
           <button
             type="button"
             onClick={() => navigate("/my-orders")}
-            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-orange-50 transition text-left"
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-orange-50 transition hover:cursor-pointer text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center">
+              <FiFileText size={14} className="text-orange-500" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800">
+                Order History
+              </p>
+              <p className="text-xs text-gray-400">View your order history</p>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/my-orders")}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-orange-50 transition hover:cursor-pointer text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center">
+              <FiShoppingBag size={14} className="text-orange-500" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800">
+                Current Order
+              </p>
+              <p className="text-xs text-gray-400">View your Current order</p>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/my-orders")}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-orange-50 transition hover:cursor-pointer text-left"
           >
             <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center">
               <FiShoppingBag size={14} className="text-orange-500" />
@@ -310,6 +342,21 @@ const Profile = () => {
             <div>
               <p className="text-sm font-semibold text-gray-800">My Orders</p>
               <p className="text-xs text-gray-400">View your order history</p>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/my-orders")}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-orange-50 transition hover:cursor-pointer text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center">
+              <FiHeart size={14} className="text-orange-500" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800">Favourites</p>
+              <p className="text-xs text-gray-400">
+                View your Favourites Restaurants
+              </p>
             </div>
           </button>
         </div>
