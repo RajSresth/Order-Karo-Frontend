@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { serverUrl } from "../../constants/constant";
 import { useNavigate } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 
 const Favourites = () => {
   const [favourites, setFavourites] = useState([]);
@@ -29,7 +30,21 @@ const Favourites = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold text-gray-800 mb-4">My Favourites</h1>
+      <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 hover:cursor-pointer transition text-gray-600"
+        >
+          <FiArrowLeft className="text-orange-600" size={20} />
+        </button>
+        <div>
+          <h1 className="text-xl font-bold text-orange-600 ">My Favourites</h1>
+          <p className="text-sm text-gray-400">
+            Orader Again from Your Favourite Restaurants
+          </p>
+        </div>
+      </div>
+
       {favourites.length === 0 ? (
         <p className="text-gray-400 text-center mt-10">No favourites yet.</p>
       ) : (
