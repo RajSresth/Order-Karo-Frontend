@@ -14,7 +14,7 @@ const useGetCurrentUser = () => {
           withCredentials: true,
         });
         dispatch(setUserData(data));
-        dispatch(setFavourites(data.favourites || []));
+        dispatch(setFavourites((data.favourites || []).map((id) => id.toString())));
       } catch (error) {
         // console.log(error.response.data)
         dispatch(setUserData(null));

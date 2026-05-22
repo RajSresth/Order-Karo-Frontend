@@ -49,6 +49,9 @@ import RestaurantPage from "./pages/outlet/RestaurantPage";
 import CartPage from "./pages/cart/CartPage";
 import Profile from "./pages/outlet/Profile";
 
+// Favourites Page
+import Favourites from "./pages/outlet/Favourites";
+
 const App = () => {
   useGetCurrentUser();
   useGetCity();

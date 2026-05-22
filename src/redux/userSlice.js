@@ -35,14 +35,14 @@ const userSlice = createSlice({
       state.favourites = action.payload;
     },
     toggleFavouriteLocal: (state, action) => {
-      const shopId = action.payload;
+      const shopId = action.payload.toString();
       const index = state.favourites.indexOf(shopId);
       if (index === -1) {
         state.favourites.push(shopId);
       } else {
         state.favourites.splice(index, 1);
       }
-    }
+    },
   },
 });
 
@@ -53,7 +53,7 @@ export const {
   setState,
   setShopInMyCity,
   setAddress,
-  setFavourites, 
-  toggleFavouriteLocal
+  setFavourites,
+  toggleFavouriteLocal,
 } = userSlice.actions;
 export default userSlice.reducer;

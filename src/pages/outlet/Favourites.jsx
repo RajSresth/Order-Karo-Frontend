@@ -1,7 +1,7 @@
 // pages/Favourites.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { serverUrl } from "../constants/constant";
+import { serverUrl } from "../../constants/constant";
 import { useNavigate } from "react-router-dom";
 
 const Favourites = () => {
@@ -37,7 +37,7 @@ const Favourites = () => {
           {favourites.map((shop) => (
             <div
               key={shop._id}
-              onClick={() => navigate(`/shop/${shop._id}`)}
+              onClick={() => navigate(`/restaurant/${shop._id}`)}
               className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 cursor-pointer hover:shadow-md transition"
             >
               <img
